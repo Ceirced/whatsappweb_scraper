@@ -14,7 +14,7 @@ import os
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
     parser.add_argument('--contacts-file', help='File containing contacts', required=True)
-    parser.add_argument('-t', '--time', help='Time to wait for login in seconds', required=False, default=20)
+    parser.add_argument('-t', '--time', help='Time to wait for login in seconds', required=False, default=30)
     parser.add_argument('--head', help='Run with open browser window', action='store_true')
     return parser.parse_args()
 
@@ -62,6 +62,7 @@ def main(args):
     wait_for_login(driver, int(args.time))
     image_url = ''
     for user in users:
+        print(f'\n{"":~^50}\n')
         name = user['name']
         print(f'Getting profile picture for {name}')
         search_user(driver, name)
@@ -75,7 +76,6 @@ def main(args):
             clear_search(driver)
             continue
         chat = driver.find_element('xpath', '//span[@title = "{}"]'.format(name))
-        print(f'{chat}')
         try:
             WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable(chat)
@@ -99,7 +99,14 @@ def main(args):
             continue
 
         print(f'opened chat with {name}')
-        profile = driver.find_element('xpath', '/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')
+        try:
+            WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')))
+        except:
+            print(f'Profile Picture not Clickable {name}')
+            clear_search(driver)
+            continue
+        profile = driver.find_element('xpath','/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')
         profile.click()
         
         while driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[2]/h2/span').text != name:
@@ -112,10 +119,16 @@ def main(args):
             clear_search(driver)
             continue
         image_url = profile_picture.get_attribute('src')
+        identifier = image_url.split('.jpg')[0].split('/')[-1]
 
         if not os.path.exists(f'./profile_pictures/{name}'):
             os.makedirs(f'./profile_pictures/{name}')
-        image_name = f'./profile_pictures/{name}/{name}_{image_url[-20:]}.jpg'
+        
+        if os.path.exists(f'./profile_pictures/{name}/{name}_{identifier}.jpg'):
+            print(f'profile picture for {name} already exists')
+            clear_search(driver)
+            continue
+        image_name = f'./profile_pictures/{name}/{name}_{identifier}.jpg'
         urllib.request.urlretrieve(image_url, image_name)
         print(f'saved profile picture as {image_name}')
 
