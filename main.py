@@ -10,10 +10,12 @@ import json
 from selenium.webdriver.common.keys import Keys
 import urllib.request
 import os
+import time
+
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
-    parser.add_argument('--contacts-file', help='File containing contacts', required=True)
     parser.add_argument('-t', '--time', help='Time to wait for login in seconds', required=False, default=30)
     parser.add_argument('--head', help='Run with open browser window', action='store_true')
     return parser.parse_args()
@@ -44,16 +46,31 @@ def clear_search(driver):
     searchBox.send_keys(Keys.CONTROL + "a")
     searchBox.send_keys(Keys.DELETE)
 
+def NewPicture(driver, user):
+    name = user['name']
+    try:
+        image_name = os.listdir(f'./profile_pictures/{name}')[0]
+    except FileNotFoundError:
+        return True
+    identifier = image_name.split('_',1)[1].split('.jpg')[0]
+    try:
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.XPATH, f'//img[contains(@src, \'{identifier}\')]'))
+        )
+        return False
+    except Exception as e:
+        print(e)
+        return True
+
+
 
 def main(args):
     options = Options()
     options.add_argument('--headless')
-    options.add_argument("user-data-dir=../wbomb/User_Data")
-
+    options.add_argument('--user-data-dir=./User_Data')
     if args.head:
         options.arguments.remove("--headless")  
 
-    options.add_argument('--user-data-dir=./User_Data')
     driver = webdriver.Chrome(options=options)  # 2nd change
     driver.get('https://web.whatsapp.com/')
 
@@ -67,7 +84,7 @@ def main(args):
         print(f'Getting profile picture for {name}')
         search_user(driver, name)
         try:
-            WebDriverWait(driver, 5).until(
+            chat = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, '//span[@title = "{}"]'.format(name)))
             )
             print(f'found chat with {name}')
@@ -75,7 +92,14 @@ def main(args):
             print(f'No user found for {name}')
             clear_search(driver)
             continue
-        chat = driver.find_element('xpath', '//span[@title = "{}"]'.format(name))
+
+        if NewPicture(driver,user):
+            print(f'New Picture for {name}')
+        else:
+            print(f'No new Picture for {name}')
+            clear_search(driver)
+            continue
+
         try:
             WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable(chat)
@@ -100,18 +124,17 @@ def main(args):
 
         print(f'opened chat with {name}')
         try:
-            WebDriverWait(driver, 5).until(
+            profile = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')))
         except:
-            print(f'Profile Picture not Clickable {name}')
+            print(f'Profile not Clickable {name}')
             clear_search(driver)
             continue
-        profile = driver.find_element('xpath','/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')
         profile.click()
-        
-        while driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[2]/h2/span').text != name:
-            print(f'waiting for profile picture to load for {name}')
-            sleep(1)
+
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[2]/h2/span[contains(text(), "{name}")]'))
+        )
         try:
             profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[1]/div/img')
         except:
@@ -134,6 +157,8 @@ def main(args):
 
 
         clear_search(driver)
+    # input('Press enter to exit')
+
 
 args = parse_arguments()
 main(args)
