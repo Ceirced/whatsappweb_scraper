@@ -133,7 +133,8 @@ def main(args):
         try:
             profile = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')))
-        except:
+        except Exception as e:
+            print(e)
             print(f'Profile not Clickable {name}')
             clear_search(driver)
             continue

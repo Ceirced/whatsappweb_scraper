@@ -1,4 +1,4 @@
-# whatsappweb_scrapertrying to track whatsapp profile picture changes
+# whatsappweb_scraper
 
 ## description
 This python script uses selenium to download and check for new profile pictures of whatsapp contacts.
