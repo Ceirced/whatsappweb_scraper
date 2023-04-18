@@ -18,6 +18,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
     parser.add_argument('-t', '--time', help='Time to wait for login in seconds', required=False, default=30)
     parser.add_argument('--head', help='Run with open browser window', action='store_true')
+    parser.add_argument('-u', '--user', help='scrape specific user', nargs=1, required=False)
     return parser.parse_args()
 
 def read_users():
@@ -75,6 +76,11 @@ def main(args):
     driver.get('https://web.whatsapp.com/')
 
     users = read_users()
+    if args.user:
+        users = [user for user in users if user['name'] == args.user[0]]
+        if len(users) == 0:
+            print(f'No user found with name {args.user[0]}')
+            quit()
 
     wait_for_login(driver, int(args.time))
     image_url = ''
@@ -85,10 +91,11 @@ def main(args):
         search_user(driver, name)
         try:
             chat = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, '//span[@title = "{}"]'.format(name)))
+                EC.presence_of_element_located((By.XPATH, f'//span[contains(@title,\'{name}\')]'))
             )
             print(f'found chat with {name}')
-        except:
+        except Exception as e:
+            print(e)
             print(f'No user found for {name}')
             clear_search(driver)
             continue

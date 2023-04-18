@@ -34,4 +34,5 @@ Linux:
 ## options
 
 + `--head` : run the browser in head mode
-+ `-t,--time` : time to wait for whatsapp to log in (default 30 seconds)
++ `-t, --time` : time to wait for whatsapp to log in (default 30 seconds)
++ `-u, --user` : scrape a specific user
