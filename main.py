@@ -6,11 +6,14 @@ import argparse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 import json
 from selenium.webdriver.common.keys import Keys
 import urllib.request
 import os
 import time
+
 
 
 
@@ -38,6 +41,7 @@ def wait_for_login(driver, time: int):
     print('login successful')
 
 def search_user(driver, name):
+    clear_search(driver)
     searchBox = driver.find_element('xpath', '//*[@id="side"]/div[1]/div/div/div[2]/div/div[1]')
     searchBox.send_keys(name)
     print(f'entered {name} in search box')
@@ -50,18 +54,35 @@ def clear_search(driver):
 def NewPicture(driver, user):
     name = user['name']
     try:
-        image_name = os.listdir(f'./profile_pictures/{name}')[0]
+        # getting the last image in the folder
+        # TODO: find a way to get the last image in the folder. probably making a json file with the last image name 
+        image_name = os.listdir(f'./profile_pictures/{name}').pop()
     except FileNotFoundError:
         return True
     identifier = image_name.split('_',1)[1].split('.jpg')[0]
     try:
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 3).until(
             EC.presence_of_element_located((By.XPATH, f'//img[contains(@src, \'{identifier}\')]'))
         )
         return False
     except Exception as e:
-        print(e)
         return True
+
+def getStatus(driver, user):
+    #function to get status of user
+    #should only be called when profile was already klicked
+
+    try:
+        status = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span'))
+        )
+    except Exception as e:
+        print(e)
+        return 'Could not get status'
+    print(f'got status for {user["name"]}')
+    print(status.text)
+    return status.text
+
 
 
 
@@ -73,7 +94,7 @@ def main(args):
     if args.head:
         options.arguments.remove("--headless")  
 
-    driver = webdriver.Chrome(options=options)  # 2nd change
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options, )  # 2nd change
     driver.get('https://web.whatsapp.com/')
 
     users = read_users()
@@ -98,14 +119,12 @@ def main(args):
         except Exception as e:
             print(e)
             print(f'No user found for {name}')
-            clear_search(driver)
             continue
 
         if NewPicture(driver,user):
             print(f'New Picture for {name}')
         else:
             print(f'No new Picture for {name}')
-            clear_search(driver)
             continue
 
         try:
@@ -129,26 +148,36 @@ def main(args):
         if counter == 5:
             print(f'could not open chat with {name} after 5 tries')
             continue
-
-        print(f'opened chat with {name}')
+        
         try:
             profile = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')))
         except Exception as e:
             print(e)
             print(f'Profile not Clickable {name}')
-            clear_search(driver)
+            continue
+        if profile.text != name:
+            print('opened wrong chat')
+            print(f'opened chat with {profile.text} instead of {name}. Skipping...')
             continue
         profile.click()
+        print(f'clicked profile for {name}')
 
-        WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[2]/h2/span[contains(text(), "{name}")]'))
-        )
         try:
-            profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[1]/div/img')
+            WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div/div[2]/h2/span[contains(text(), "{name}")]'))
+            )
+            print(f'{name} profile opened')
+        except Exception as e:
+            print(f'could not open profile for {name}')
+            input('press enter to continue')
+
+        # status = getStatus(driver, user)
+        # print(f'Status: {status}')
+        try:
+            profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div/div[1]/div/img')
         except:
             print(f'No profile picture for {name}')
-            clear_search(driver)
             continue
         image_url = profile_picture.get_attribute('src')
         identifier = image_url.split('.jpg')[0].split('/')[-1]
@@ -158,14 +187,12 @@ def main(args):
         
         if os.path.exists(f'./profile_pictures/{name}/{name}_{identifier}.jpg'):
             print(f'profile picture for {name} already exists')
-            clear_search(driver)
             continue
         image_name = f'./profile_pictures/{name}/{name}_{identifier}.jpg'
         urllib.request.urlretrieve(image_url, image_name)
         print(f'saved profile picture as {image_name}')
 
 
-        clear_search(driver)
     # input('Press enter to exit')
 
 
