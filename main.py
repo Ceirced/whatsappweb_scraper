@@ -14,8 +14,43 @@ import urllib.request
 import os
 import time
 
+DATA_DIRECTORY = './profile_pictures/'
 
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.status = {}
+        self.userdir = f'{DATA_DIRECTORY}{self.name}'
+        self.profile_pictures = self.getOldProfilePictures()
 
+    def getOldStatuses(self):
+        with open(f'{DATA_DIRECTORY}{self.name}.json') as f:
+            self.status = json.load(f)['status']
+    
+    def add_status(self, status):
+        self.status[int(time.time())] = status
+
+    def getOldProfilePictures(self):
+        with open(f'{self.userdir}/{self.name}.json') as f:
+            return json.load(f)['profile_pictures']
+
+    def saveUserJson(self):
+        dictionary = {
+            'name': self.name,
+            'statuses': self.status,
+            'profile_pictures': self.profile_pictures
+        }
+        with open(f'{self.userdir}/{self.name}.json', 'w') as f:
+            json.dump(dictionary, f)
+        print(f'created json file for {self.name}')
+    
+    def lastProfilepictureChange(self):
+        #returns the time of the last profile picture change
+        return max(self.profile_pictures.keys())
+    
+
+        
+        
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
