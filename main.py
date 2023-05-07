@@ -21,18 +21,36 @@ class User:
         self.name = name
         self.status = {}
         self.userdir = f'{DATA_DIRECTORY}{self.name}'
-        self.profile_pictures = self.getOldProfilePictures()
+        if self.JsonFileExists():
+            self.profile_pictures = self.getOldProfilePictures()
+        else:
+            print(f'No json file found for {self.name}, creatiung new one')
+            self.profile_pictures = {}
+            self.saveUserJson()
+
+    def JsonFileExists(self):
+        if not os.path.exists(f'{self.userdir}/{self.name}.json'):
+            print(f'No json file found for {self.name}')
+            return False
+        return True
 
     def getOldStatuses(self):
         with open(f'{DATA_DIRECTORY}{self.name}.json') as f:
             self.status = json.load(f)['status']
     
+    
     def add_status(self, status):
+        """adds a status to the status dictionary"""
         self.status[int(time.time())] = status
+        self.saveUserJson()
 
     def getOldProfilePictures(self):
         with open(f'{self.userdir}/{self.name}.json') as f:
             return json.load(f)['profile_pictures']
+        
+    def addProfilePicture(self, identifier):
+        self.profile_pictures[int(time.time())] = identifier
+        self.saveUserJson()
 
     def saveUserJson(self):
         dictionary = {
@@ -42,11 +60,15 @@ class User:
         }
         with open(f'{self.userdir}/{self.name}.json', 'w') as f:
             json.dump(dictionary, f)
-        print(f'created json file for {self.name}')
+        print(f'saved json file for {self.name}')
     
     def lastProfilepictureChange(self):
         #returns the time of the last profile picture change
-        return max(self.profile_pictures.keys())
+        return int(max(self.profile_pictures.keys()))
+    
+    def lastProfilePictureIdentifier(self):
+        #returns the identifier of the last profile picture
+        return self.profile_pictures[self.lastProfilepictureChange()]
     
 
         
@@ -87,17 +109,9 @@ def clear_search(driver):
     searchBox.send_keys(Keys.DELETE)
 
 def NewPicture(driver, user):
-    name = user['name']
-    try:
-        # getting the last image in the folder
-        # TODO: find a way to get the last image in the folder. probably making a json file with the last image name 
-        image_name = os.listdir(f'./profile_pictures/{name}').pop()
-    except FileNotFoundError:
-        return True
-    identifier = image_name.split('_',1)[1].split('.jpg')[0]
     try:
         WebDriverWait(driver, 3).until(
-            EC.presence_of_element_located((By.XPATH, f'//img[contains(@src, \'{identifier}\')]'))
+            EC.presence_of_element_located((By.XPATH, f'//img[contains(@src, \'{user.lastProfilePictureIdentifier()}\')]'))
         )
         return False
     except Exception as e:
@@ -143,45 +157,45 @@ def main(args):
     image_url = ''
     for user in users:
         print(f'\n{"":~^50}\n')
-        name = user['name']
-        print(f'Getting profile picture for {name}')
-        search_user(driver, name)
+        print(f'Getting profile picture for {user["name"]}')
+        user = User(user['name'])
+        search_user(driver, user.name)
         try:
             chat = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, f'//span[contains(@title,\'{name}\')]'))
+                EC.presence_of_element_located((By.XPATH, f'//span[contains(@title,\'{user.name}\')]'))
             )
-            print(f'found chat with {name}')
+            print(f'found chat with {user.name}')
         except Exception as e:
             print(e)
-            print(f'No user found for {name}')
+            print(f'No user found for {user.name}')
             continue
 
         if NewPicture(driver,user):
-            print(f'New Picture for {name}')
+            print(f'New Picture for {user.name}')
         else:
-            print(f'No new Picture for {name}')
+            print(f'No new Picture for {user.name}')
             continue
 
         try:
             WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable(chat)
             )
-            print(f'chat clickable for {name}')
+            print(f'chat clickable for {user.name}')
         except:
-            print(f'chat not clickable for {name}')
+            print(f'chat not clickable for {user.name}')
         counter = 0
         while counter < 5: 
             try:
                 chat.click()
                 break
             except:
-                print(f'could not open chat with {name}\ntrying again')
+                print(f'could not open chat with {user.name}\ntrying again')
                 counter += 1
 
                 sleep(1)
 
         if counter == 5:
-            print(f'could not open chat with {name} after 5 tries')
+            print(f'could not open chat with {user.name} after 5 tries')
             continue
         
         try:
@@ -189,22 +203,22 @@ def main(args):
                 EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')))
         except Exception as e:
             print(e)
-            print(f'Profile not Clickable {name}')
+            print(f'Profile not Clickable {user.name}')
             continue
-        if profile.text != name:
+        if profile.text != user.name:
             print('opened wrong chat')
-            print(f'opened chat with {profile.text} instead of {name}. Skipping...')
+            print(f'opened chat with {profile.text} instead of {user.name}. Skipping...')
             continue
         profile.click()
-        print(f'clicked profile for {name}')
+        print(f'clicked profile for {user.name}')
 
         try:
             WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div/div[2]/h2/span[contains(text(), "{name}")]'))
+                EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div/div[2]/h2/span[contains(text(), "{user.name}")]'))
             )
-            print(f'{name} profile opened')
+            print(f'{user.name} profile opened')
         except Exception as e:
-            print(f'could not open profile for {name}')
+            print(f'could not open profile for {user.name}')
             input('press enter to continue')
 
         # status = getStatus(driver, user)
@@ -212,20 +226,21 @@ def main(args):
         try:
             profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div/div[1]/div/img')
         except:
-            print(f'No profile picture for {name}')
+            print(f'No profile picture for {user.name}')
             continue
         image_url = profile_picture.get_attribute('src')
-        identifier = image_url.split('.jpg')[0].split('/')[-1]
+        identifier = image_url.split('_n.jpg')[0].split('/')[-1]
 
-        if not os.path.exists(f'./profile_pictures/{name}'):
-            os.makedirs(f'./profile_pictures/{name}')
+        if not os.path.exists(f'./profile_pictures/{user.name}'):
+            os.makedirs(f'./profile_pictures/{user.name}')
         
-        if os.path.exists(f'./profile_pictures/{name}/{name}_{identifier}.jpg'):
-            print(f'profile picture for {name} already exists')
+        if os.path.exists(f'./profile_pictures/{user.name}/{user.name}_{identifier}.jpg'):
+            print(f'profile picture for {user.name} already exists')
             continue
-        image_name = f'./profile_pictures/{name}/{name}_{identifier}.jpg'
+        image_name = f'./profile_pictures/{user.name}/{user.name}_{identifier}.jpg'
         urllib.request.urlretrieve(image_url, image_name)
         print(f'saved profile picture as {image_name}')
+        user.addProfilePicture(identifier)
 
 
     # input('Press enter to exit')
