@@ -63,11 +63,11 @@ class User:
         print(f'saved json file for {self.name}')
     
     def lastProfilepictureChange(self):
-        #returns the time of the last profile picture change
+        """returns the time of the last profile picture change"""
         return int(max(self.profile_pictures.keys()))
     
-    def lastProfilePictureIdentifier(self):
-        #returns the identifier of the last profile picture
+    def lastProfilePictureIdentifier(self) -> str:
+        """returns the identifier of the last profile picture"""
         return self.profile_pictures[self.lastProfilepictureChange()]
     
 
@@ -97,10 +97,31 @@ def wait_for_login(driver, time: int):
         quit()
     print('login successful')
 
+def newChatSearch(driver, user: User):
+    """searches for a user in the new chat search box
+    Could be a safer alternative to the search_user function"""
+
+    newChatButton = driver.find_element('xpath','/html/body/div[1]/div/div/div[4]/header/div[2]/div/span/div[3]/div/span')
+    newChatButton.click()
+    clearNewChatSearch(driver)
+    SearchBox = driver.find_element('xpath', '/html/body/div[1]/div/div/div[3]/div[1]/span/div/span/div/div[1]/div/div[2]/div/div[1]')
+    SearchBox.send_keys(user.name)
+    print(f'entered {user.name} in search box')
+    input('press enter to continue')
+
+def clearNewChatSearch(driver):
+    SearchBox = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[3]/div[1]/span/div/span/div/div[1]/div/div[2]/div/div[1]'))
+    )
+    SearchBox.send_keys(Keys.CONTROL + "a")
+    SearchBox.send_keys(Keys.DELETE)
+        
+
 def search_user(driver, name):
     clear_search(driver)
     searchBox = driver.find_element('xpath', '//*[@id="side"]/div[1]/div/div/div[2]/div/div[1]')
     searchBox.send_keys(name)
+    searchBox.send_keys(Keys.ENTER)
     print(f'entered {name} in search box')
 
 def clear_search(driver):
@@ -118,8 +139,8 @@ def NewPicture(driver, user):
         return True
 
 def getStatus(driver, user):
-    #function to get status of user
-    #should only be called when profile was already klicked
+    """function to get status of user
+    should only be called when profile was already klicked"""
 
     try:
         status = WebDriverWait(driver, 5).until(
@@ -160,6 +181,7 @@ def main(args):
         print(f'Getting profile picture for {user["name"]}')
         user = User(user['name'])
         search_user(driver, user.name)
+        newChatSearch(driver, user)
         try:
             chat = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, f'//span[contains(@title,\'{user.name}\')]'))
@@ -169,6 +191,7 @@ def main(args):
             print(e)
             print(f'No user found for {user.name}')
             continue
+        # print([(c.text,c.get_attribute('title')) for c in chat])
 
         if NewPicture(driver,user):
             print(f'New Picture for {user.name}')
