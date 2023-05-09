@@ -64,12 +64,17 @@ class User:
     
     def lastProfilepictureChange(self):
         """returns the time of the last profile picture change"""
-        return int(max(self.profile_pictures.keys()))
-    
+        try:
+            lastChange = max(self.profile_pictures.keys())
+            return lastChange 
+        except:
+            print(f'Could not get profile picture changes found for {self.name}')
     def lastProfilePictureIdentifier(self) -> str:
         """returns the identifier of the last profile picture"""
-        return self.profile_pictures[self.lastProfilepictureChange()]
-    
+        try:
+            return self.profile_pictures[self.lastProfilepictureChange()]
+        except:
+            print(f'Could not find last profile picture identifier for {self.name}')
 
         
         
@@ -181,7 +186,7 @@ def main(args):
         print(f'Getting profile picture for {user["name"]}')
         user = User(user['name'])
         search_user(driver, user.name)
-        newChatSearch(driver, user)
+        # newChatSearch(driver, user)
         try:
             chat = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, f'//span[contains(@title,\'{user.name}\')]'))
