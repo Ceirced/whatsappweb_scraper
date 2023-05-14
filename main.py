@@ -84,6 +84,7 @@ def parse_arguments():
     parser.add_argument('-t', '--time', help='Time to wait for login in seconds', required=False, default=30)
     parser.add_argument('--head', help='Run with open browser window', action='store_true')
     parser.add_argument('-u', '--user', help='scrape specific user', nargs=1, required=False)
+    parser.add_argument('-s', '--status', help='scrape statuses', action='store_true')
     return parser.parse_args()
 
 def read_users():
@@ -141,6 +142,11 @@ def NewPicture(driver, user):
         )
         return False
     except Exception as e:
+        # doesn't work sometimes because there is another chat with no profle picture in the search results
+        if driver.find_element(By.CSS_SELECTOR, 'path.primary'):
+            print(f'{user.name} has no profile picture')
+            return False
+        input('press enter to continue')
         return True
 
 def getStatus(driver, user):
@@ -148,15 +154,25 @@ def getStatus(driver, user):
     should only be called when profile was already klicked"""
 
     try:
-        status = WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span'))
+        # have to find a better way to wait for the status to load
+        status = WebDriverWait(driver, 2).until(
+            EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span'))
         )
     except Exception as e:
-        print(e)
-        return 'Could not get status'
-    print(f'got status for {user["name"]}')
-    print(status.text)
-    return status.text
+        return False
+    print(f'got status for {user.name}')
+    
+    # wait for text to appear in status
+    try:
+        WebDriverWait(driver, 5).until(
+            lambda x: driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span').get_attribute('title') != ''
+        )
+    except Exception as e:
+        input('press enter to continue')
+        return 'Could not get status text'
+    
+    return status.get_attribute('title')
+
 
 
 
@@ -196,13 +212,13 @@ def main(args):
             print(e)
             print(f'No user found for {user.name}')
             continue
-        # print([(c.text,c.get_attribute('title')) for c in chat])
-
-        if NewPicture(driver,user):
-            print(f'New Picture for {user.name}')
-        else:
-            print(f'No new Picture for {user.name}')
-            continue
+        
+        if not args.status:
+            if NewPicture(driver,user):
+                print(f'New Picture for {user.name}')
+            else:
+                print(f'No new Picture for {user.name}')
+                continue
 
         try:
             WebDriverWait(driver, 5).until(
@@ -242,17 +258,17 @@ def main(args):
 
         try:
             WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div/div[2]/h2/span[contains(text(), "{user.name}")]'))
+                EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[2]/h2/span[contains(text(), "{user.name}")]'))
             )
             print(f'{user.name} profile opened')
         except Exception as e:
             print(f'could not open profile for {user.name}')
             input('press enter to continue')
 
-        # status = getStatus(driver, user)
-        # print(f'Status: {status}')
+        status = getStatus(driver, user)
+        print(f'Status: {status}')
         try:
-            profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div/div[1]/div/img')
+            profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[1]/div/img')
         except:
             print(f'No profile picture for {user.name}')
             continue
