@@ -142,11 +142,6 @@ def NewPicture(driver, user):
         )
         return False
     except Exception as e:
-        # doesn't work sometimes because there is another chat with no profle picture in the search results
-        if driver.find_element(By.CSS_SELECTOR, 'path.primary'):
-            print(f'{user.name} has no profile picture')
-            return False
-        input('press enter to continue')
         return True
 
 def getStatus(driver, user):
