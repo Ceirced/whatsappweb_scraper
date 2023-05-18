@@ -12,72 +12,7 @@ import json
 from selenium.webdriver.common.keys import Keys
 import urllib.request
 import os
-import time
-
-DATA_DIRECTORY = './profile_pictures/'
-
-class User:
-    def __init__(self, name):
-        self.name = name
-        self.status = {}
-        self.userdir = f'{DATA_DIRECTORY}{self.name}'
-        if self.JsonFileExists():
-            self.profile_pictures = self.getOldProfilePictures()
-        else:
-            print(f'No json file found for {self.name}, creatiung new one')
-            self.profile_pictures = {}
-            self.saveUserJson()
-
-    def JsonFileExists(self):
-        if not os.path.exists(f'{self.userdir}/{self.name}.json'):
-            print(f'No json file found for {self.name}')
-            return False
-        return True
-
-    def getOldStatuses(self):
-        with open(f'{DATA_DIRECTORY}{self.name}.json') as f:
-            self.status = json.load(f)['status']
-    
-    
-    def add_status(self, status):
-        """adds a status to the status dictionary"""
-        self.status[int(time.time())] = status
-        self.saveUserJson()
-
-    def getOldProfilePictures(self):
-        with open(f'{self.userdir}/{self.name}.json') as f:
-            return json.load(f)['profile_pictures']
-        
-    def addProfilePicture(self, identifier):
-        self.profile_pictures[int(time.time())] = identifier
-        self.saveUserJson()
-
-    def saveUserJson(self):
-        dictionary = {
-            'name': self.name,
-            'statuses': self.status,
-            'profile_pictures': self.profile_pictures
-        }
-        with open(f'{self.userdir}/{self.name}.json', 'w') as f:
-            json.dump(dictionary, f)
-        print(f'saved json file for {self.name}')
-    
-    def lastProfilepictureChange(self):
-        """returns the time of the last profile picture change"""
-        try:
-            lastChange = max(self.profile_pictures.keys())
-            return lastChange 
-        except:
-            print(f'Could not get profile picture changes found for {self.name}')
-    def lastProfilePictureIdentifier(self) -> str:
-        """returns the identifier of the last profile picture"""
-        try:
-            return self.profile_pictures[self.lastProfilepictureChange()]
-        except:
-            print(f'Could not find last profile picture identifier for {self.name}')
-
-        
-        
+from user import User   
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
@@ -164,7 +99,8 @@ def getStatus(driver, user):
         )
     except Exception as e:
         input('press enter to continue')
-        return 'Could not get status text'
+        print('could not get status text')
+        return False
     
     return status.get_attribute('title')
 
@@ -262,6 +198,13 @@ def main(args):
 
         status = getStatus(driver, user)
         print(f'Status: {status}')
+        if status:
+            if user.lastStatus() != status:
+                print(f'old status: {user.lastStatus()} new status: {status}')
+                user.add_status(status)
+                user.saveUserJson()
+            else:
+                print(f'No new Status for {user.name}')
         try:
             profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[1]/div/img')
         except:
