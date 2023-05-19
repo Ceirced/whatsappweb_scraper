@@ -109,6 +109,7 @@ def getStatus(driver, user):
 
 
 def main(args):
+    changes = {}
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--user-data-dir=./User_Data')
@@ -132,6 +133,7 @@ def main(args):
         print(f'\n{"":~^50}\n')
         print(f'Getting profile picture for {user["name"]}')
         user = User(user['name'])
+        changes[user.name] = {}
         search_user(driver, user.name)
         # newChatSearch(driver, user)
         try:
@@ -197,12 +199,12 @@ def main(args):
             input('press enter to continue')
 
         status = getStatus(driver, user)
-        print(f'Status: {status}')
         if status:
             if user.lastStatus() != status:
                 print(f'old status: {user.lastStatus()} new status: {status}')
                 user.add_status(status)
                 user.saveUserJson()
+                changes[user.name]['status']= status
             else:
                 print(f'No new Status for {user.name}')
         try:
@@ -223,10 +225,22 @@ def main(args):
         urllib.request.urlretrieve(image_url, image_name)
         print(f'saved profile picture as {image_name}')
         user.addProfilePicture(identifier)
+        changes[user.name]['profile_picture'] = identifier
+    return changes
 
 
     # input('Press enter to exit')
 
+if __name__ == '__main__':
+    args = parse_arguments()
+    changes = main(args)
 
-args = parse_arguments()
-main(args)
+    print(f'\n{"":~^50}\n')
+
+    if any(change != {} for change in changes.values()):
+        print('Changes:')
+        for user, change in changes.items():
+            if change != {}:
+                print(f'{user}: {change}')
+    else:
+        print('No Changes')
