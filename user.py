@@ -1,14 +1,16 @@
 import json
 import time
 import os
+import pathlib
 
 
-DATA_DIRECTORY = './profile_pictures/'
+DIRECTORY = pathlib.Path(__file__).parent.resolve()
+DATA_DIRECTORY = f'{DIRECTORY}/profile_pictures'
 
 class User:
     def __init__(self, name):
         self.name = name
-        self.userdir = f'{DATA_DIRECTORY}{self.name}'
+        self.userdir = f'{DATA_DIRECTORY}/{self.name}'
         if self.JsonFileExists():
             self.profile_pictures = self.getOldProfilePictures()
             self.statuses = self.getOldStatuses()

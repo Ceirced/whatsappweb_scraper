@@ -13,6 +13,11 @@ from selenium.webdriver.common.keys import Keys
 import urllib.request
 import os
 from user import User   
+import pathlib
+
+DIRECTORY = pathlib.Path(__file__).parent.resolve()
+PROFILE_PICTURES = f'{DIRECTORY}/profile_pictures'
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
@@ -23,7 +28,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def read_users():
-    with open('users.json') as f:
+    with open(f'{DIRECTORY}/users.json') as f:
         users = json.load(f)['users']
     return users
 
@@ -215,13 +220,12 @@ def main(args):
         image_url = profile_picture.get_attribute('src')
         identifier = image_url.split('_n.jpg')[0].split('/')[-1]
 
-        if not os.path.exists(f'./profile_pictures/{user.name}'):
-            os.makedirs(f'./profile_pictures/{user.name}')
+        os.makedirs(user.userdir, exist_ok=True)
         
-        if os.path.exists(f'./profile_pictures/{user.name}/{user.name}_{identifier}.jpg'):
+        image_name = f'{user.userdir}/{user.name}_{identifier}.jpg'
+        if os.path.exists(image_name):
             print(f'profile picture for {user.name} already exists')
             continue
-        image_name = f'./profile_pictures/{user.name}/{user.name}_{identifier}.jpg'
         urllib.request.urlretrieve(image_url, image_name)
         print(f'saved profile picture as {image_name}')
         user.addProfilePicture(identifier)
