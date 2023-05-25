@@ -22,7 +22,6 @@ class User:
 
     def JsonFileExists(self):
         if not os.path.exists(f'{self.userdir}/{self.name}.json'):
-            print(f'No json file found for {self.name}')
             return False
         return True
 
@@ -35,7 +34,6 @@ class User:
         """adds a status to the status dictionary"""
         print(f'adding status {status} for {self.name}, statuses: {self.statuses}')
         self.statuses[int(time.time())] = status
-        self.saveUserJson()
 
     def getOldProfilePictures(self):
         with open(f'{self.userdir}/{self.name}.json') as f:
@@ -43,7 +41,6 @@ class User:
         
     def addProfilePicture(self, identifier):
         self.profile_pictures[int(time.time())] = identifier
-        self.saveUserJson()
 
     def saveUserJson(self):
         dictionary = {

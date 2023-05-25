@@ -14,6 +14,7 @@ import urllib.request
 import os
 from user import User   
 import pathlib
+from time import sleep
 
 DIRECTORY = pathlib.Path(__file__).parent.resolve()
 PROFILE_PICTURES = f'{DIRECTORY}/profile_pictures'
@@ -94,6 +95,7 @@ def getStatus(driver, user):
             EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span'))
         )
     except Exception as e:
+        print('could not get status')
         return False
     print(f'got status for {user.name}')
     
@@ -117,7 +119,7 @@ def main(args):
     changes = {}
     options = Options()
     options.add_argument('--headless')
-    options.add_argument('--user-data-dir=./User_Data')
+    options.add_argument(f'--user-data-dir={DIRECTORY}/User_Data')
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3641.0 Safari/537.36')
     if args.head:
         options.arguments.remove("--headless")  
@@ -136,6 +138,11 @@ def main(args):
     image_url = ''
     for user in users:
         print(f'\n{"":~^50}\n')
+        if len(changes) == 50:
+            seconds = 5
+            print(f'chilling for {seconds} seconds')
+            sleep(seconds)
+            print(f'\n{"":~^50}\n')
         print(f'Getting profile picture for {user["name"]}')
         user = User(user['name'])
         changes[user.name] = {}
@@ -205,8 +212,9 @@ def main(args):
 
         status = getStatus(driver, user)
         if status:
-            if user.lastStatus() != status:
-                print(f'old status: {user.lastStatus()} new status: {status}')
+            lastStatus = user.lastStatus()
+            if lastStatus != status:
+                print(f'old status: {lastStatus} new status: {status}')
                 user.add_status(status)
                 user.saveUserJson()
                 changes[user.name]['status']= status
@@ -229,6 +237,7 @@ def main(args):
         urllib.request.urlretrieve(image_url, image_name)
         print(f'saved profile picture as {image_name}')
         user.addProfilePicture(identifier)
+        user.saveUserJson()
         changes[user.name]['profile_picture'] = identifier
     return changes
 
