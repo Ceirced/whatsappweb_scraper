@@ -108,8 +108,13 @@ def getStatus(driver, user):
         input('press enter to continue')
         print('could not get status text')
         return False
-    
-    return status.get_attribute('title')
+
+    try:  
+        return status.get_attribute('title')
+    except Exception as e:
+        print(e)
+        print('could not get status text')
+        return False
 
 
 
