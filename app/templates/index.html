@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Statuses and Profile Pictures</title>
+</head>
+<body>
+    <h1>Statuses and Profile Pictures</h1>
+
+    {% for name, entries in data.items() %}
+        <h2>{{ name }}</h2>
+
+        <h3>Statuses and Profile Pictures:</h3>
+        <ul>
+            {% for entry in entries %}
+                {% if entry.status %}
+                    <li>
+                        Status at {{ entry.timestamp_human }}: {{ entry.status }}
+                    </li>
+                {% endif %}
+                {% if entry.picture_path %}
+                    <li>
+                        profile picture at {{ entry.timestamp_human }}
+                        <img src="static/images/profile_pictures/{{ name }}/{{ name }}_{{ entry.picture_path }}.jpg" alt="Profile Picture" >
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</body>
+</html>
