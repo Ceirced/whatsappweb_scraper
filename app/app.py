@@ -3,20 +3,56 @@ import os
 import json
 from collections import OrderedDict
 import datetime
+import sys
+import os
+
+# Get the absolute path of the parent directory
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print(parent_dir)
+
+# Append the parent directory to sys.path
+sys.path.append(parent_dir)
+
+from user import User
 
 app = Flask(__name__)
+
+directory = '/home/cederic/whatsappweb_scraper'
+root_directory = f'{directory}/profile_pictures'
+subfolders = [folder for folder in os.listdir(root_directory) if os.path.isdir(os.path.join(root_directory, folder))]
 
 @app.route('/')
 def index():
 
-    directory = '/home/cederic/whatsappweb_scraper'
-    # Define the root directory where your subfolders are located
-    root_directory = f'{directory}/profile_pictures'
+    data = {}
 
-    # Get a list of all subfolders
-    subfolders = [folder for folder in os.listdir(root_directory) if os.path.isdir(os.path.join(root_directory, folder))]
+    for folder in subfolders:
+        user = User(folder)
+        for timestamp, status in user.statuses.items():
+            data[timestamp] = {
+                'name': user.name,
+                'timestamp': timestamp,
+                'timestamp_human': datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'),
+                'status': status,
+                'picture_id': user.profile_pictures.get(timestamp, '')
+            }
+        for timestamp, picture in user.profile_pictures.items():
+            if timestamp not in data:
+                data[timestamp] = {
+                    'name': user.name,
+                    'timestamp': timestamp,
+                    'timestamp_human': datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'),
+                    'status': '',
+                    'picture_id': picture
+                }
+    sorted_data = sorted(data.items(), key=lambda x: x[1]['timestamp'], reverse=True)
 
-    # Create an empty dictionary to store the data
+    return render_template('feed.html', data=sorted_data)
+
+
+@app.route('/by_name')
+def by_name():
+
     data = {}
 
     # Iterate over each subfolder
@@ -59,6 +95,8 @@ def index():
         data[name] = combined_data
     # Render the template with the data
     return render_template(f'index.html', data=data, root_directory=root_directory)
+
+
 
 if __name__ == '__main__':
     app.run()

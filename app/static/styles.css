@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #aaa;
+  }
+  
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .header {
+    background-color: #333;
+    padding: 20px;
+    color: #f9f9f9;
+  }
+  
+  .header h1 {
+    margin: 0;
+  }
+  
+  .feed {
+    margin-top: 20px;
+  }
+  
+  .post {
+    background-color: #333;
+    padding: 10px;
+    margin-bottom: 20px;
+    color: white;
+    display: flex; /* Add flex display for image positioning */
+    align-items: center; /* Vertically align the image */
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .post img {
+    max-width: 100%; /* Ensure the image doesn't overflow the post container */
+    height: auto; /* Maintain the image's aspect ratio */
+  }
+  
+  /* Dark Mode Styles */
+  body.dark-mode {
+    background-color: #111;
+    color: #f9f9f9;
+  }
+  
+  .header.dark-mode {
+    background-color: #222;
+  }
+  
+  .post.dark-mode {
+    background-color: #444;
+    color: #f9f9f9;
+  }
+  
+  /* Additional Styles */
+  .toggle-mode {
+    text-align: right;
+  }
+  
+  .toggle-mode a {
+    color: #f9f9f9;
+    text-decoration: none;
+  }
+  
+  .toggle-mode a:hover {
+    text-decoration: underline;
+  }
