@@ -97,6 +97,18 @@ def by_name():
     return render_template(f'index.html', data=data, root_directory=root_directory)
 
 
+@app.route('/<username>')
+def profile(username):
+    print(username)
+    user_data = {}  # Replace with your code to fetch user data based on the username
+    with open(f'{directory}/profile_pictures/{username}/{username}.json') as f:
+        user_data = json.load(f)
+
+
+    return render_template('profile.html', username=username, data=user_data)
+
+
+
 
 if __name__ == '__main__':
     app.run()
