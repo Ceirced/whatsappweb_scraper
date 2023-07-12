@@ -2,22 +2,29 @@
 <html>
 <head>
     <title>User Profile</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='profile.css') }}">
 </head>
 <body>
-    <h1>User Profile: {{ username }}</h1>
+    <div class="container">
+        <div class="pictures">
+            <h2>Pictures:</h2>
+            <ul>
+                {% for timestamp, picture_path in data.profile_pictures.items()|reverse %}
+                    <li><img src="../static/images/profile_pictures/{{ username }}/{{ username }}_{{ picture_path }}.jpg" alt="Profile Picture" width="640px"></li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <h2>Statuses:</h2>
-    <ul>
-        {% for timestamp, status in data.statuses.items() %}
-            <li>{{ timestamp }}: {{ status }}</li>
-        {% endfor %}
-    </ul>
-
-    <h2>Pictures:</h2>
-    <ul>
-        {% for timestamp, picture_path in data.profile_pictures.items()|reverse %}
-            <li><img src="../static/images/profile_pictures/{{ username }}/{{ username}}_{{ picture_path }}.jpg" alt="Profile Picture" width="200px"></li>
-        {% endfor %}
-    </ul>
+        <div class="statuses">
+            <h2>Statuses:</h2>
+            <ul>
+                {% for timestamp, status in data.statuses.items() %}
+                    <li>{{ timestamp }}: {{ status }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
+
+

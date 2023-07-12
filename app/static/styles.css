@@ -69,3 +69,12 @@ body {
   .toggle-mode a:hover {
     text-decoration: underline;
   }
+
+  a.username {
+    color: #f9f9f9;
+    text-decoration: none;
+  }
+
+  a.username:hover {
+    text-decoration: underline;
+  }

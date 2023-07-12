@@ -1,0 +1,55 @@
+ /* für profile */
+
+ body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #aaa;
+  }
+ /* style.css */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.pictures {
+    margin-right: 20px;
+}
+
+.pictures h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.pictures ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pictures li {
+    margin-bottom: 10px;
+}
+
+.statuses {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.statuses h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.statuses ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.statuses li {
+    margin-bottom: 10px;
+}
