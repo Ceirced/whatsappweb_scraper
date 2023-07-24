@@ -21,31 +21,33 @@ directory = '/home/cederic/whatsappweb_scraper'
 root_directory = f'{directory}/profile_pictures'
 subfolders = [folder for folder in os.listdir(root_directory) if os.path.isdir(os.path.join(root_directory, folder))]
 
-@app.route('/')
-def index():
 
-    data = {}
+data = {}
 
-    for folder in subfolders:
-        user = User(folder)
-        for timestamp, status in user.statuses.items():
+for folder in subfolders:
+    user = User(folder)
+    for timestamp, status in user.statuses.items():
+        data[timestamp] = {
+            'name': user.name,
+            'timestamp': timestamp,
+            'timestamp_human': datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'),
+            'status': status,
+            'picture_id': user.profile_pictures.get(timestamp, '')
+        }
+    for timestamp, picture in user.profile_pictures.items():
+        if timestamp not in data:
             data[timestamp] = {
                 'name': user.name,
                 'timestamp': timestamp,
                 'timestamp_human': datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'),
-                'status': status,
-                'picture_id': user.profile_pictures.get(timestamp, '')
+                'status': '',
+                'picture_id': picture
             }
-        for timestamp, picture in user.profile_pictures.items():
-            if timestamp not in data:
-                data[timestamp] = {
-                    'name': user.name,
-                    'timestamp': timestamp,
-                    'timestamp_human': datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'),
-                    'status': '',
-                    'picture_id': picture
-                }
-    sorted_data = sorted(data.items(), key=lambda x: x[1]['timestamp'], reverse=True)
+sorted_data = sorted(data.items(), key=lambda x: x[1]['timestamp'], reverse=True)
+
+@app.route('/')
+def index():
+
 
     return render_template('feed.html', data=sorted_data)
 
@@ -99,13 +101,19 @@ def by_name():
 
 @app.route('/<username>')
 def profile(username):
-    print(username)
+    print(username, 'hallo')
     user_data = {}  # Replace with your code to fetch user data based on the username
     with open(f'{directory}/profile_pictures/{username}/{username}.json') as f:
         user_data = json.load(f)
 
+    timestamp_conversions = {}
 
-    return render_template('profile.html', username=username, data=user_data)
+    for timestamp in user_data['statuses'] | user_data['profile_pictures']:
+        timestamp_conversions[timestamp] = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d.%m.%Y %H:%M:%S')
+
+    print(timestamp_conversions, 'hallo')
+
+    return render_template('profile.html', username=username, data=user_data, timestamp_conversions=timestamp_conversions)
 
 
 
