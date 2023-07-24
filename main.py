@@ -90,9 +90,17 @@ def getStatus(driver, user):
     should only be called when profile was already klicked"""
 
     try:
+        WebDriverWait(driver, 5).until(
+            lambda x: driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span').get_attribute('title') != ''
+        )
+    except Exception as e:
+        print('could not get status text')
+        return False
+
+    try:
         # have to find a better way to wait for the status to load
         status = WebDriverWait(driver, 2).until(
-            EC.visibility_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span'))
+            EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span'))
         )
     except Exception as e:
         print('could not get status')
@@ -100,14 +108,6 @@ def getStatus(driver, user):
     print(f'got status for {user.name}')
     
     # wait for text to appear in status
-    try:
-        WebDriverWait(driver, 5).until(
-            lambda x: driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span').get_attribute('title') != ''
-        )
-    except Exception as e:
-        input('press enter to continue')
-        print('could not get status text')
-        return False
 
     try:  
         return status.get_attribute('title')
@@ -213,7 +213,6 @@ def main(args):
             print(f'{user.name} profile opened')
         except Exception as e:
             print(f'could not open profile for {user.name}')
-            input('press enter to continue')
 
         status = getStatus(driver, user)
         if status:
