@@ -129,7 +129,7 @@ def main(args):
     if args.head:
         options.arguments.remove("--headless")  
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options, )  # 2nd change
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='114.0.5735.90').install()),options=options, )  # 2nd change
     driver.get('https://web.whatsapp.com/')
 
     users = read_users()
