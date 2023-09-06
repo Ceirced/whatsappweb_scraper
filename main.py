@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/cederic/whatsappweb_scraper/env/bin/python3
 from selenium import webdriver
 from time import sleep
 from selenium.webdriver.chrome.options import Options
@@ -18,6 +18,8 @@ from time import sleep
 
 DIRECTORY = pathlib.Path(__file__).parent.resolve()
 PROFILE_PICTURES = f'{DIRECTORY}/profile_pictures'
+
+
 
 
 def parse_arguments():
@@ -129,7 +131,7 @@ def main(args):
     if args.head:
         options.arguments.remove("--headless")  
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='114.0.5735.90').install()),options=options, )  # 2nd change
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options, )  # 2nd change
     driver.get('https://web.whatsapp.com/')
 
     users = read_users()

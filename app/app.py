@@ -8,7 +8,6 @@ import os
 
 # Get the absolute path of the parent directory
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print(parent_dir)
 
 # Append the parent directory to sys.path
 sys.path.append(parent_dir)
@@ -101,7 +100,6 @@ def by_name():
 
 @app.route('/<username>')
 def profile(username):
-    print(username, 'hallo')
     user_data = {}  # Replace with your code to fetch user data based on the username
     with open(f'{directory}/profile_pictures/{username}/{username}.json') as f:
         user_data = json.load(f)
@@ -110,8 +108,6 @@ def profile(username):
 
     for timestamp in user_data['statuses'] | user_data['profile_pictures']:
         timestamp_conversions[timestamp] = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d.%m.%Y %H:%M:%S')
-
-    print(timestamp_conversions, 'hallo')
 
     return render_template('profile.html', username=username, data=user_data, timestamp_conversions=timestamp_conversions)
 
