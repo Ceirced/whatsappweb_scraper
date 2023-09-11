@@ -6,8 +6,6 @@ import argparse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
 import json
 from selenium.webdriver.common.keys import Keys
 import urllib.request
@@ -131,7 +129,7 @@ def main(args):
     if args.head:
         options.arguments.remove("--headless")  
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options, )  # 2nd change
+    driver = webdriver.Chrome(options=options)
     driver.get('https://web.whatsapp.com/')
 
     users = read_users()
