@@ -65,6 +65,7 @@
     background-color: #333;
     padding: 20px;
     gap: 10px;
+    border-radius: 5px;
 }
 
 .post > .time_of_post {

@@ -21,7 +21,7 @@
 
         <div class="statuses">
             <h2>Statuses:</h2>
-            {% for timestamp, status in data.statuses.items() %}
+            {% for timestamp, status in data.statuses.items()|reverse %}
             <div class="post">
                 <div class="time_of_post">{{ timestamp_conversions[timestamp] }}</div>
                 <div class="status">{{ status }} </div>

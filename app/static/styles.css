@@ -34,6 +34,7 @@ body {
     align-items: center; /* Vertically align the image */
     flex-direction: column;
     text-align: center;
+    border-radius: 5px;
   }
   
   .post img {
