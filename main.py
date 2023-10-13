@@ -193,27 +193,29 @@ def main(args):
             continue
         
         try:
-            profile = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header/div[2]/div/div/span')))
+            header = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header'))
+            )
         except Exception as e:
             print(e)
             print(f'Profile not Clickable {user.name}')
             continue
-        if profile.text != user.name:
-            print('opened wrong chat')
-            print(f'opened chat with {profile.text} instead of {user.name}. Skipping...')
+        if user.name not in header.text :
+            print('probably opened wrong chat')
+            print(f'Header says: {header.text}')
             continue
-        profile.click()
+        header.click()
         print(f'clicked profile for {user.name}')
 
         try:
-            WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, f'/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[2]/h2/span[contains(text(), "{user.name}")]'))
+            name_and_number = WebDriverWait(driver, 5).until(
+                EC.text_to_be_present_in_element((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]'), user.name)
             )
             print(f'{user.name} profile opened')
         except Exception as e:
             print(f'could not open profile for {user.name}')
-
+            print(f'text: {name_and_number.text}')
+        
         status = getStatus(driver, user)
         if status:
             lastStatus = user.lastStatus()
