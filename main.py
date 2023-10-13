@@ -13,6 +13,8 @@ import os
 from user import User   
 import pathlib
 from time import sleep
+import matplotlib.pyplot as plt
+from matplotlib.image import imread
 
 DIRECTORY = pathlib.Path(__file__).parent.resolve()
 PROFILE_PICTURES = f'{DIRECTORY}/profile_pictures'
@@ -41,8 +43,31 @@ def wait_for_login(driver, time: int):
         )
     except:
         print('Timeout while waiting for search box')
-        quit()
+        print('trying to get the qr code')
+        qr_code = getQRcode(driver)
+        if qr_code:
+            qr_code.screenshot(f'{DIRECTORY}/qr_code.png')
+            print('saved qr code as qr_code.png')
+            img = imread(f'{DIRECTORY}/qr_code.png')
+            plt.imshow(img)
+            plt.axis('off')
+            print('showing qr code')
+            plt.show()
+
+        else:
+            quit()
     print('login successful')
+
+def getQRcode(driver):
+    try:
+        qr_code = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[3]/div[1]/div/div/div[2]/div/canvas'))
+
+        )
+    except:
+        print('could not get qr code')
+        return False
+    return qr_code
 
 def newChatSearch(driver, user: User):
     """searches for a user in the new chat search box

@@ -6,3 +6,6 @@ profile_pictures/
 raw_contacts.txt
 *.bakk
 app/static/images/profile_pictures
+volume/screenie3.png
+qr_code.png
+__pycache__/
