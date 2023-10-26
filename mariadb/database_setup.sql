@@ -5,7 +5,7 @@ FLUSH PRIVILEGES;
 USE `whatsfeed`;
 CREATE TABLE IF NOT EXISTS `users` (
     `user_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `contact_name` date NOT NULL
+    `contact_name` varchar(255) NOT NULL
 );
 CREATE TABLE IF NOT EXISTS `pictures` (
     `image_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,

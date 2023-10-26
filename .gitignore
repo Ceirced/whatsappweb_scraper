@@ -9,3 +9,5 @@ app/static/images/profile_pictures
 volume/screenie3.png
 qr_code.png
 __pycache__/
+app/config.json
+insert_users.py
