@@ -10,3 +10,14 @@ services:
     volumes:
       - whatsfeed_mariadb:/var/lib/mysql
       - ./mariadb:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+      whatsfeed_network:
+        ipv4_address: 172.24.0.2
+
+networks:
+  whatsfeed_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.24.0.0/24
