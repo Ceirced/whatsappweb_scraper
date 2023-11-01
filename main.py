@@ -225,8 +225,9 @@ def main(args):
             print(e)
             print(f'Profile not Clickable {user.name}')
             continue
-        if user.name not in header.text :
-            print('probably opened wrong chat')
+        open_chat = header.text.split('\n')[0]
+        if user.name != open_chat:
+            print(f'Error: opened chat with {open_chat}')
             print(f'Header says: {header.text}')
             continue
         header.click()
