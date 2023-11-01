@@ -15,12 +15,19 @@ import pathlib
 from time import sleep
 import matplotlib.pyplot as plt
 from matplotlib.image import imread
+from check_sync import js_db_users_synced, json_db_status_synced, get_users_in_db
 
 DIRECTORY = pathlib.Path(__file__).parent.resolve()
 PROFILE_PICTURES = f'{DIRECTORY}/profile_pictures'
 
+#check if json file is synced with db
+if not js_db_users_synced():
+    print('json user file is not synced with db,something is wrong, please run insert_users.py')
+    exit()
 
-
+if not json_db_status_synced():
+    print('json status files are not synced with db, something is wrong, please run insert_status.py')
+    exit()
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
@@ -157,9 +164,9 @@ def main(args):
     driver = webdriver.Chrome(options=options)
     driver.get('https://web.whatsapp.com/')
 
-    users = read_users()
+    users = get_users_in_db()
     if args.user:
-        users = [user for user in users if user['name'] == args.user[0]]
+        users = [user for user in users if user == args.user[0]]
         if len(users) == 0:
             print(f'No user found with name {args.user[0]}')
             quit()
@@ -173,8 +180,8 @@ def main(args):
             print(f'chilling for {seconds} seconds')
             sleep(seconds)
             print(f'\n{"":~^50}\n')
-        print(f'Getting profile picture for {user["name"]}')
-        user = User(user['name'])
+        user = User(user)
+        print(f'Getting profile picture for {user.name}')
         changes[user.name] = {}
         search_user(driver, user.name)
         # newChatSearch(driver, user)

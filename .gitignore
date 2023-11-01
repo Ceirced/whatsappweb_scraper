@@ -11,3 +11,4 @@ qr_code.png
 __pycache__/
 app/config.json
 insert_users.py
+whatsfeed_mariadb.session.sql
