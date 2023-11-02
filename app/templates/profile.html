@@ -10,7 +10,7 @@
     <div class="container">
         <div class="pictures">
             <h2>Pictures:</h2>
-            {% for timestamp, picture_path in data.profile_pictures.items()|reverse %}
+            {% for timestamp, picture_path in profile_pictures.items()|reverse %}
             <div class="post">
                 <div class="time_of_post">{{ timestamp_conversions[timestamp] }}</div>
                 <img src="../static/images/profile_pictures/{{ username }}/{{ username }}_{{ picture_path }}.jpg"
@@ -21,7 +21,7 @@
 
         <div class="statuses">
             <h2>Statuses:</h2>
-            {% for timestamp, status in data.statuses.items()|reverse %}
+            {% for timestamp, status in statuses.items()|reverse %}
             <div class="post">
                 <div class="time_of_post">{{ timestamp_conversions[timestamp] }}</div>
                 <div class="status">{{ status }} </div>

@@ -2,7 +2,12 @@ import json
 import time
 import os
 import pathlib
+from database import Session
+from models import users_table, status_table, pictures_table
+from sqlalchemy import select
 
+
+session = Session()
 
 DIRECTORY = pathlib.Path(__file__).parent.resolve()
 DATA_DIRECTORY = f'{DIRECTORY}/profile_pictures'
@@ -11,6 +16,7 @@ class User:
     def __init__(self, name):
         self.name = name
         self.userdir = f'{DATA_DIRECTORY}/{self.name}'
+        self.user_id = self.getUserId()
         if self.JsonFileExists():
             self.profile_pictures = self.getOldProfilePictures()
             self.statuses = self.getOldStatuses()
@@ -19,29 +25,40 @@ class User:
             self.profile_pictures = {}
             self.statuses = {}
             self.saveUserJson()
-
+    def getUserId(self):
+        return session.query(users_table).filter(users_table.contact_name == self.name).first().user_id
+    
     def JsonFileExists(self):
         if not os.path.exists(f'{self.userdir}/{self.name}.json'):
             return False
         return True
 
     def getOldStatuses(self):
-        with open(f'{self.userdir}/{self.name}.json') as f:
-            return json.load(f)['statuses']
-    
-    
+        stmt = select(status_table.timestamp, status_table.status).where(status_table.user_id == self.user_id)
+        results = session.execute(stmt).all()
+        results = {result.timestamp: result.status for result in results}
+        return results
+
     def add_status(self, status):
-        """adds a status to the status dictionary"""
-        print(f'adding status {status} for {self.name}, statuses: {self.statuses}')
-        self.statuses[int(time.time())] = status
+        """adds a status to the status dictionary and saves it to the database"""
+        print(f'adding status {status} for {self.name}, statuses before: {self.statuses}')
+        current_time = int(time.time())
+        self.statuses[current_time] = status
+        session.add(status_table(user_id=self.user_id, timestamp=current_time, status=status))
+        session.commit()
 
     def getOldProfilePictures(self):
-        with open(f'{self.userdir}/{self.name}.json') as f:
-            return json.load(f)['profile_pictures']
+        stmt = select(pictures_table.timestamp, pictures_table.picture_filename).where(pictures_table.user_id == self.user_id)
+        results = session.execute(stmt).all()
+        results = {result.timestamp: result.picture_filename for result in results}
+        return results
         
     def addProfilePicture(self, identifier):
         self.profile_pictures[int(time.time())] = identifier
-
+        current_time = int(time.time())
+        session.add(pictures_table(user_id=self.user_id, timestamp=current_time, picture_filename=identifier))
+        session.commit()
+        
     def saveUserJson(self):
         dictionary = {
             'name': self.name,
@@ -60,6 +77,7 @@ class User:
             return lastChange 
         except:
             print(f'Could not get profile picture changes for {self.name}')
+            
     def lastProfilePictureIdentifier(self) -> str:
         """returns the identifier of the last profile picture"""
         try:

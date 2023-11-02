@@ -3,6 +3,7 @@
 source $HOME/whatsappweb_scraper/env/bin/activate
 
 flask --app $HOME/whatsappweb_scraper/app/app run --port=5040 &
+sleep 0.5
 
 SERVER_PID=$!
 
