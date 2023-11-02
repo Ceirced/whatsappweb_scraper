@@ -35,9 +35,9 @@ class User:
 
     def getOldStatuses(self):
         stmt = select(status_table.timestamp, status_table.status).where(status_table.user_id == self.user_id)
-        result = session.execute(stmt).all() 
-        result = {str(i[0]): i[1] for i in result} #TODO: removve str() when picture timestamps are also ints
-        return result
+        results = session.execute(stmt).all()
+        results = {result.timestamp: result.status for result in results}
+        return results
 
     def add_status(self, status):
         """adds a status to the status dictionary"""
@@ -49,9 +49,9 @@ class User:
 
     def getOldProfilePictures(self):
         stmt = select(pictures_table.timestamp, pictures_table.picture_filename).where(pictures_table.user_id == self.user_id)
-        result = session.execute(stmt).all()
-        result = {str(i[0]): i[1] for i in result}
-        return result
+        results = session.execute(stmt).all()
+        results = {result.timestamp: result.picture_filename for result in results}
+        return results
         
     def addProfilePicture(self, identifier):
         self.profile_pictures[int(time.time())] = identifier

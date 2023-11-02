@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 import os
-import json
 from collections import OrderedDict
 import datetime
 import sys
@@ -17,8 +16,6 @@ from check_sync import get_users_in_db
 
 app = Flask(__name__)
 
-directory = '/home/cederic/whatsappweb_scraper'
-root_directory = f'{directory}/profile_pictures'
 contact_names = get_users_in_db()
 
 data = {}
@@ -37,7 +34,7 @@ for contact_name in contact_names:
         if timestamp not in data:
             data[timestamp] = {
                 'name': user.name,
-                'timestamp': timestamp,
+                'timestamp': timestamp,         #needed to sort the data
                 'timestamp_human': datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'),
                 'status': '',
                 'picture_id': picture
@@ -46,26 +43,17 @@ sorted_data = sorted(data.items(), key=lambda x: x[1]['timestamp'], reverse=True
 
 @app.route('/')
 def index():
-
-
     return render_template('feed.html', data=sorted_data)
 
 @app.route('/<username>')
 def profile(username):
     user = User(username)
-    user_data = {}  # Replace with your code to fetch user data based on the username
-    with open(f'{directory}/profile_pictures/{username}/{username}.json') as f:
-        user_data = json.load(f)
-
     timestamp_conversions = {}
 
     for timestamp in user.statuses | user.profile_pictures:
         timestamp_conversions[timestamp] = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d.%m.%Y %H:%M:%S')
 
-    return render_template('profile.html', username=username, data=user_data, timestamp_conversions=timestamp_conversions)
-
-
-
+    return render_template('profile.html', username=user.name, statuses = user.statuses, profile_pictures = user.profile_pictures , timestamp_conversions=timestamp_conversions)
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser()

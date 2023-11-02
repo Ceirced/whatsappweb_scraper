@@ -1,5 +1,3 @@
-import mysql.connector
-import json
 import os
 from user import User
 from check_sync import js_db_users_synced, json_db_picture_synced
