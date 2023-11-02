@@ -15,7 +15,7 @@ import pathlib
 from time import sleep
 import matplotlib.pyplot as plt
 from matplotlib.image import imread
-from check_sync import js_db_users_synced, json_db_status_synced, get_users_in_db
+from check_sync import js_db_users_synced, json_db_status_synced, get_users_in_db, json_db_picture_synced
 
 DIRECTORY = pathlib.Path(__file__).parent.resolve()
 PROFILE_PICTURES = f'{DIRECTORY}/profile_pictures'
@@ -29,6 +29,10 @@ if not json_db_status_synced():
     print('json status files are not synced with db, something is wrong, please run insert_status.py')
     exit()
 
+if not json_db_picture_synced():
+    print('json picture files are not synced with db, something is wrong, please run insert_pictures.py')
+    exit()
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Whatsapp Profile picture scraper')
     parser.add_argument('-t', '--time', help='Time to wait for login in seconds', required=False, default=30)
@@ -36,11 +40,6 @@ def parse_arguments():
     parser.add_argument('-u', '--user', help='scrape specific user', nargs=1, required=False)
     parser.add_argument('-s', '--status', help='scrape statuses', action='store_true')
     return parser.parse_args()
-
-def read_users():
-    with open(f'{DIRECTORY}/users.json') as f:
-        users = json.load(f)['users']
-    return users
 
 def wait_for_login(driver, time: int):
     print(f'waiting for login for {time} seconds')
@@ -147,10 +146,6 @@ def getStatus(driver, user):
         print(e)
         print('could not get status text')
         return False
-
-
-
-
 
 def main(args):
     changes = {}

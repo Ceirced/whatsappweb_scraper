@@ -40,7 +40,7 @@ class User:
         return results
 
     def add_status(self, status):
-        """adds a status to the status dictionary"""
+        """adds a status to the status dictionary and saves it to the database"""
         print(f'adding status {status} for {self.name}, statuses before: {self.statuses}')
         current_time = int(time.time())
         self.statuses[current_time] = status
@@ -77,6 +77,7 @@ class User:
             return lastChange 
         except:
             print(f'Could not get profile picture changes for {self.name}')
+            
     def lastProfilePictureIdentifier(self) -> str:
         """returns the identifier of the last profile picture"""
         try:
