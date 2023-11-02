@@ -48,7 +48,7 @@ def add_user(name: str):
     users["users"].append({"name": name})
     session.add(users_table(contact_name=name))
     session.commit()
-    with open('users.json', 'w') as f:
+    with open(f'{PROJECT_DIRECTORY}/users.json', 'w') as f:
         json.dump(users, f, indent=4)
     print(f'added user {name} to users.json')
 
