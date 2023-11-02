@@ -125,6 +125,7 @@ def json_db_picture_synced() -> bool:
     return True
 
 if __name__ == '__main__':
+    # just to debug
     js_db_users_synced()
     json_db_status_synced()
     json_db_picture_synced()
