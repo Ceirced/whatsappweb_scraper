@@ -5,7 +5,7 @@ from collections import OrderedDict
 import datetime
 import sys
 import os
-
+import argparse
 # Get the absolute path of the parent directory
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -13,18 +13,18 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 
 from user import User
+from check_sync import get_users_in_db
 
 app = Flask(__name__)
 
 directory = '/home/cederic/whatsappweb_scraper'
 root_directory = f'{directory}/profile_pictures'
-subfolders = [folder for folder in os.listdir(root_directory) if os.path.isdir(os.path.join(root_directory, folder))]
-
+contact_names = get_users_in_db()
 
 data = {}
 
-for folder in subfolders:
-    user = User(folder)
+for contact_name in contact_names:
+    user = User(contact_name)
     for timestamp, status in user.statuses.items():
         data[timestamp] = {
             'name': user.name,
@@ -50,63 +50,16 @@ def index():
 
     return render_template('feed.html', data=sorted_data)
 
-
-@app.route('/by_name')
-def by_name():
-
-    data = {}
-
-    # Iterate over each subfolder
-    for folder in subfolders:
-        # Read the JSON file in each subfolder
-        json_file = os.path.join(root_directory, folder, f'{folder}.json')
-        with open(json_file) as f:
-            folder_data = json.load(f, object_pairs_hook=OrderedDict)
-
-        # Extract the name, statuses, and profile pictures from the JSON data
-        name = folder_data['name']
-        statuses = folder_data['statuses']
-        profile_pictures = folder_data['profile_pictures']
-
-        unique_profile_pictures = {}
-        unique_values = set()
-
-        for timestamp, picture in profile_pictures.items():
-            if picture not in unique_profile_pictures.values():
-                unique_profile_pictures[timestamp] = picture
-                unique_values.add(picture)
-
-
-        combined_data = []
-
-        # Merge statuses and profile pictures based on timestamps
-        timestamps = set(statuses.keys()) | set(unique_profile_pictures.keys())
-        # timestamps = [int(timestamp) for timestamp in timestamps]
-        for timestamp in sorted(timestamps,reverse=True):
-            status = statuses.get(timestamp, '')
-            picture_path = profile_pictures.get(timestamp, '')
-
-            combined_data.append({
-                'timestamp': timestamp,
-                'timestamp_human': datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'),
-                'status': status,
-                'picture_path': picture_path
-            })
-
-        data[name] = combined_data
-    # Render the template with the data
-    return render_template(f'index.html', data=data, root_directory=root_directory)
-
-
 @app.route('/<username>')
 def profile(username):
+    user = User(username)
     user_data = {}  # Replace with your code to fetch user data based on the username
     with open(f'{directory}/profile_pictures/{username}/{username}.json') as f:
         user_data = json.load(f)
 
     timestamp_conversions = {}
 
-    for timestamp in user_data['statuses'] | user_data['profile_pictures']:
+    for timestamp in user.statuses | user.profile_pictures:
         timestamp_conversions[timestamp] = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d.%m.%Y %H:%M:%S')
 
     return render_template('profile.html', username=username, data=user_data, timestamp_conversions=timestamp_conversions)
@@ -115,4 +68,10 @@ def profile(username):
 
 
 if __name__ == '__main__':
-    app.run()
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('-d', '--debug', action='store_true', help='enable debug mode')
+    args = argparser.parse_args()
+    if args.debug:
+        app.run(debug=True)
+    else:
+        app.run()
