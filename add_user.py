@@ -11,6 +11,7 @@ import difflib
 session = Session()
 
 VCF_DIRECTORY = '/home/cederic/contacts/contacts'
+PROJECT_DIRECTORY = '/home/cederic/whatsappweb_scraper'
 
 
 
@@ -37,7 +38,7 @@ def suggest_closest_matches(fullnames: list[str], input_fullname: str):
 
 def add_user(name: str):
     """adds a user to the users.json file"""
-    with open('users.json', 'r') as f:
+    with open(f'{PROJECT_DIRECTORY}/users.json', 'r') as f:
         users = json.load(f)
     
     if name in get_users_in_db() or name == "":
