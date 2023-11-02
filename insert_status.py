@@ -1,8 +1,7 @@
-import mysql.connector
 import json
 import os
 from user import User
-from check_sync import js_db_users_synced
+from check_sync import js_db_users_synced, json_db_status_synced
 from database import Session
 from models import users_table, status_table
 
@@ -11,6 +10,9 @@ session = Session()
 #check if json file is synced with db
 if not js_db_users_synced():
     print('json file is not synced with db, please run insert_users.py')
+    exit()
+    
+if json_db_status_synced():
     exit()
 
 # Database connection parameters

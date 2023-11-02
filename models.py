@@ -13,6 +13,23 @@ class users_table(Base):
         return f"<User(user_id={self.user_id!r}, name={self.contact_name!r})>"
 
 class pictures_table(Base):
+    """Class used to represent a the pictures table in the database
+    
+    Attributes:
+    ------------
+    image_id: Mapped[int]
+        The id of the picture
+
+    picture_filename: Mapped[str]
+        The filename of the picture
+
+    timestamp: Mapped[int]
+        unix timestamp of when the picture was saved
+
+    user_id: Mapped[int]
+        The id of the user the picture belongs to
+    
+    """
     __tablename__ = 'pictures'
 
     image_id: Mapped[int] = mapped_column(Integer, primary_key=True)

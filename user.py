@@ -3,7 +3,7 @@ import time
 import os
 import pathlib
 from database import Session
-from models import users_table, status_table
+from models import users_table, status_table, pictures_table
 from sqlalchemy import select
 
 
@@ -48,12 +48,17 @@ class User:
         session.commit()
 
     def getOldProfilePictures(self):
-        with open(f'{self.userdir}/{self.name}.json') as f:
-            return json.load(f)['profile_pictures']
+        stmt = select(pictures_table.timestamp, pictures_table.picture_filename).where(pictures_table.user_id == self.user_id)
+        result = session.execute(stmt).all()
+        result = {str(i[0]): i[1] for i in result}
+        return result
         
     def addProfilePicture(self, identifier):
         self.profile_pictures[int(time.time())] = identifier
-
+        current_time = int(time.time())
+        session.add(pictures_table(user_id=self.user_id, timestamp=current_time, picture_filename=identifier))
+        session.commit()
+        
     def saveUserJson(self):
         dictionary = {
             'name': self.name,
