@@ -6,7 +6,6 @@ import argparse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import json
 from selenium.webdriver.common.keys import Keys
 import urllib.request
 import os
@@ -74,26 +73,6 @@ def getQRcode(driver):
         print('could not get qr code')
         return False
     return qr_code
-
-def newChatSearch(driver, user: User):
-    """searches for a user in the new chat search box
-    Could be a safer alternative to the search_user function"""
-
-    newChatButton = driver.find_element('xpath','/html/body/div[1]/div/div/div[4]/header/div[2]/div/span/div[3]/div/span')
-    newChatButton.click()
-    clearNewChatSearch(driver)
-    SearchBox = driver.find_element('xpath', '/html/body/div[1]/div/div/div[3]/div[1]/span/div/span/div/div[1]/div/div[2]/div/div[1]')
-    SearchBox.send_keys(user.name)
-    print(f'entered {user.name} in search box')
-    input('press enter to continue')
-
-def clearNewChatSearch(driver):
-    SearchBox = WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[3]/div[1]/span/div/span/div/div[1]/div/div[2]/div/div[1]'))
-    )
-    SearchBox.send_keys(Keys.CONTROL + "a")
-    SearchBox.send_keys(Keys.DELETE)
-        
 
 def search_user(driver, name):
     clear_search(driver)
