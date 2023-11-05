@@ -29,7 +29,7 @@
 
                 {% if item['picture_id'] %}
                 <img src="static/images/profile_pictures/{{ item['name'] }}/{{ item['name'] }}_{{ item['picture_id'] }}.jpg"
-                    alt="Profile Picture">
+                    alt="Profile Picture" loading="lazy">
                 {% endif %}
             </div>
             {% endfor %}

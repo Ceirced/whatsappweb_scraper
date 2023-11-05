@@ -14,7 +14,7 @@
             <div class="post">
                 <div class="time_of_post">{{ timestamp_conversions[timestamp] }}</div>
                 <img src="../static/images/profile_pictures/{{ username }}/{{ username }}_{{ picture_path }}.jpg"
-                    alt="Profile Picture" width="640px">
+                    alt="Profile Picture" width="640px" loading="lazy">
             </div>
             {% endfor %}
         </div>
