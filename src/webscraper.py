@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from time import sleep
+import os
 
 USERAGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
 print("test")
@@ -16,6 +17,10 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),optio
 
 driver.get('https://open.spotify.com/artist/1LDYdZ0TAovDFvPtQLm6e9')
 print('title: %s' % driver.title)
-driver.save_screenshot('/app/data/screenie3.png')
+
+if driver.save_screenshot('/home/user/app/data/screenie3.png'):
+    print('screenshot saved')
+else:
+    print('screenshot failed')
 driver.quit()
 print('done')

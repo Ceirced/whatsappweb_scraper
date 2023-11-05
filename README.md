@@ -38,7 +38,14 @@ Linux:
 + `-u, --user` : scrape a specific user
 
 ## to run the dockerimage
+UID und GID are set in the ~/.bashrc file with
 ```
-sudo docker build -t selenium_docker .
-sudo docker compose up
+export UID=$(id -u)
+export GID=$(id -g)
+```
+
+in bash:
+```
+docker build -t selenium_docker . --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
+docker compose up -f scrape_container_docker-compose.yml up
 ```
