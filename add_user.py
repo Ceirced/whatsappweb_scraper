@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/cederic/whatsappweb_scraper/env/bin/python3
 import json
 import argparse 
 from database import Session
