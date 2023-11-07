@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # to sync the ./src dir with the container only for development
+    volumes:
+      - ./src:/usr/src/app/src
+    ports:
+      - 5004:5000
+    environment:
+      - FLASK_APP=src/__init__.py
+      - FLASK_DEBUG=1
+      - FLASK_ENV=development
+    healthcheck:
+      test: curl --fail http://localhost:5000 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
