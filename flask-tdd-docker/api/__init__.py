@@ -14,3 +14,4 @@ db = SQLAlchemy(app)
 
 from . import routes
 api.add_resource(routes.get_user, '/user/<int:user_id>')
+api.add_resource(routes.get_all_users, '/users')

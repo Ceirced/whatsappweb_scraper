@@ -10,7 +10,7 @@ class users(Base):
     contact_name: Mapped[str] = mapped_column('contact_name',String(255))
 
     def __repr__(self) -> str:
-        return f"<User(user_id={self.user_id!r}, name={self.contact_name!r})>"
+        return f"<User(user_id={self.user_id!r}, contact_name={self.contact_name!r})>"
 
 class pictures(Base):
     """Class used to represent a the pictures table in the database

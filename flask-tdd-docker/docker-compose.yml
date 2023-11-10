@@ -16,9 +16,9 @@ services:
         #so manage.py knows which app to run
       - FLASK_APP=api/__init__.py
       - PRODUCTION_DATABASE_URI=${PRODUCTION_DATABASE_URI}
-      # - APP_SETTINGS=src.config.ProductionConfig
-      # - APP_SETTINGS=src.config.TestingConfig
-      - APP_SETTINGS=api.config.DevelopmentConfig
+      - APP_SETTINGS=api.config.ProductionConfig
+      # - APP_SETTINGS=api.config.TestingConfig
+      # - APP_SETTINGS=api.config.DevelopmentConfig
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
       interval: 10s

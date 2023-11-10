@@ -19,6 +19,5 @@ class TestingConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
-    DEBUG = False
-    FLASK_ENV = 'production'
+    DEBUG = True
     SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI = os.getenv('PRODUCTION_DATABASE_URI')
