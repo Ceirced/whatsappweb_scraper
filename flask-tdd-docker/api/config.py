@@ -5,20 +5,20 @@ load_dotenv()
 
 class BaseConfig:
     TESTING = False
-
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
+    FLASK_ENV = 'development'
 
 
 class TestingConfig(BaseConfig):
     TESTING = True
     DEBUG = False
     FLASK_ENV = 'testing'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
 
 class ProductionConfig(BaseConfig):
-    DEBUG = True
-    FLASK_ENV = 'development'
+    DEBUG = False
+    FLASK_ENV = 'production'
     SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI = os.getenv('PRODUCTION_DATABASE_URI')

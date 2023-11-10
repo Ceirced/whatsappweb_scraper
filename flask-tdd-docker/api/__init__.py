@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restx import Resource, Api
+from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 import os
 

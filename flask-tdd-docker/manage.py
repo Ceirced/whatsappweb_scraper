@@ -1,10 +1,4 @@
-from flask.cli import FlaskGroup
-
-from src import app
-
-
-cli = FlaskGroup(app)
-
+from api import app
 
 if __name__ == '__main__':
-    cli()
+    app.run(host='0.0.0.0', port=5000)
