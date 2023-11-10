@@ -6,18 +6,31 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    stop_signal: SIGINT
     # to sync the ./src dir with the container only for development
     volumes:
       - ./src:/usr/src/app/src
     ports:
       - 5004:5000
     environment:
+        #so manage.py knows which app to run
       - FLASK_APP=src/__init__.py
-      - FLASK_DEBUG=1
-      - FLASK_ENV=development
+      # - FLASK_DEBUG=1
+      # - FLASK_ENV=development
+      - PRODUCTION_DATABASE_URI=${PRODUCTION_DATABASE_URI}
+      - APP_SETTINGS=src.config.ProductionConfig
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
       interval: 10s
       timeout: 10s
       retries: 5
       start_period: 5s
+    networks:
+      whatsappweb_scraper_whatsfeed_network:
+        ipv4_address: 172.24.0.3
+        aliases:
+          - api
+
+networks:
+  whatsappweb_scraper_whatsfeed_network:
+    external: true

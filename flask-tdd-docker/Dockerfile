@@ -1,9 +1,12 @@
 # pull official base image
-FROM python:3.11.2-slim-buster as builder
+FROM python:3.11.2-slim-buster 
+# as builder
 
-RUN apt-get update && apt-get -y install curl=7.64 --no-install-recommends
+RUN apt-get update && apt-get -y install curl=7.64.0-4+deb10u7 --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-FROM python:3.11.2-slim-buster
+# FROM python:3.11.2-slim-buster
 
 # set working directory
 WORKDIR /usr/src/app

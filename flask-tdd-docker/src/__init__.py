@@ -1,20 +1,16 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_restx import Resource, Api
-
+from flask_sqlalchemy import SQLAlchemy
+import os
 
 # instantiate the app
 app = Flask(__name__)
 
 api = Api(app)
 
-app.config.from_object('src.config.DevelopmentConfig')
+app_settings = os.getenv('APP_SETTINGS')
+app.config.from_object(app_settings)
+db = SQLAlchemy(app)
 
-class Ping(Resource):
-    def get(self):
-        return {
-            'status': 'success',
-            'message': 'pong!'
-        }
-
-
-api.add_resource(Ping, '/ping')
+from . import routes
+api.add_resource(routes.get_user, '/user/<int:user_id>')
