@@ -27,7 +27,6 @@ class get_user(Resource):
 class get_all_users(Resource):
     def get(self):
         users_list = db.session.query(users).all()
-        print({user.user_id:{'contact_name': user.contact_name} for user in users_list})
         if not users_list:
             return jsonify({
                 'status': 'fail',
