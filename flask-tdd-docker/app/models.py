@@ -6,9 +6,10 @@ Base = declarative_base()
 
 class users(db.Model):
     __tablename__ = 'users'
-    
     user_id= db.Column(db.Integer, primary_key=True)
     contact_name = db.Column(db.String(255), nullable=False, unique=True)
+    pictures = db.relationship('pictures', backref='user', lazy='dynamic')
+    status = db.relationship('status', backref='user', lazy='dynamic')
 
     def __repr__(self) -> str:
         return f"<User(user_id={self.user_id!r}, contact_name={self.contact_name!r})>"

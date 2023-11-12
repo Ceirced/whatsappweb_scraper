@@ -19,10 +19,10 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt --no-cache-dir
 
 # add app
-COPY manage.py /usr/src/app/
+COPY whatsfeed.py config.py ./
 # this gets synced in the docker compose but not when building the image alone
-COPY api /usr/src/app/api
-
+COPY app app
+COPY migrations migrations
 
 # run server
-CMD ["python", "manage.py", "run", "-h", "0.0.0.0"]
+CMD ["python", "whatsfeed.py"]

@@ -9,12 +9,12 @@ services:
     stop_signal: SIGINT
     # to sync the ./api dir with the container only for development
     volumes:
-      - ./api:/usr/src/app/api
+      - ./app:/usr/src/app/app
     ports:
       - 5004:5000
     environment:
         #so manage.py knows which app to run
-      - FLASK_APP=api/__init__.py
+      - FLASK_APP=whatsfeed.py
       - PRODUCTION_DATABASE_URI=${PRODUCTION_DATABASE_URI}
       - APP_SETTINGS=config.ProductionConfig
       # - APP_SETTINGS=config.TestingConfig
@@ -29,7 +29,7 @@ services:
       whatsappweb_scraper_whatsfeed_network:
         ipv4_address: 172.24.0.3
         aliases:
-          - api
+          - whatsfeed_app
 
 networks:
   whatsappweb_scraper_whatsfeed_network:
