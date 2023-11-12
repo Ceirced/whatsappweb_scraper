@@ -30,6 +30,7 @@ services:
         ipv4_address: 172.24.0.3
         aliases:
           - whatsfeed_app
+    restart: always
 
 networks:
   whatsappweb_scraper_whatsfeed_network:
