@@ -7,17 +7,19 @@
 </div>
 <div class="row">
     <div class="col-md-6"></div>
-    <div class="col-md-6">
+    {% if status[0] is defined%}
+    <div class="col-md-6 shadow-sm">
         <table class="table">
-        <tbody>
-            {% for status in status | reverse%}
-            <tr>
-                <td>{{ status.formatted_timestamp }}</td>
-                <td>{{ status.status }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+            <tbody>
+                {% for status in status | reverse%}
+                <tr>
+                    <td>{{ status.formatted_timestamp }}</td>
+                    <td>{{ status.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
