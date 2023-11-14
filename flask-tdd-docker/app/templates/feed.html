@@ -7,14 +7,18 @@
 </div>
 {% for post in feed_data %}
 <div class="row m-3 justify-content-center">
-    <div class="col-md-6 shadow-sm">
+    <div class="col-md-10 shadow-sm">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">{{ post.type }}</h5>
-                <p class="card-text">{{ post.content }}</p>
+                <h5 class="card-title"></h5>
                 <a href="profile/{{ post.contact_name }}">
                     <p class="card-text">{{ post.contact_name }}</p>
                 </a>
+                {% if post.type == 'status' %}
+                    <p class="card-text">{{ post.content }}</p>
+                {% else %}
+                    <img src="/images/{{ post.contact_name }}/{{ post.contact_name}}_{{ post.content }}.jpg" class="card-img-top" alt="..." loading="lazy">
+                {% endif %}
             </div>
         </div>
     </div>
