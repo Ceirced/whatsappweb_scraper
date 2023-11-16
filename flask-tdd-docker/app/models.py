@@ -76,7 +76,7 @@ users_contact_name_index = db.Index('contact_name', users.contact_name, unique=T
 status_status_index = db.Index('status',status.status, status.timestamp, status.user_id, unique=True)
 pictures_picture_filename_index = db.Index('picture_filename', pictures.picture_filename, pictures.timestamp, pictures.user_id, unique=True)
 
-def get_feed():
+def get_feed(contact_name=None):
 
     pictures_query = select(
             pictures.user_id,
@@ -100,8 +100,11 @@ def get_feed():
     # Order by timestamp
     feed = db.session.query(feed_query).order_by(feed_query.c.timestamp.desc())
 
-    # Execute the query
-    feed_items = feed.all()
+    if contact_name:
+        feed_items = feed.filter(feed_query.c.contact_name == contact_name).all()
+    else:
+        feed_items = feed.all()
+    
 
     return feed_items
 

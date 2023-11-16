@@ -1,25 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
-    <div class="col-md-6">
-        <h1>{{ user.contact_name }}</h1>
+<div class="row mx-auto">
+    <div class="col-md-6" >
+        <h1>{{ feed_data[0].contact_name }}</h1>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-6"></div>
-    {% if status[0] is defined%}
-    <div class="col-md-6 shadow-sm">
-        <table class="table">
-            <tbody>
-                {% for status in status | reverse%}
-                <tr>
-                    <td>{{ status.formatted_timestamp }}</td>
-                    <td>{{ status.status }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% for post in feed_data %}
+<div class="row justify-content-center">
+    <div class="col shadow-sm">
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ human_timestamp[post.timestamp] }}</h6>
+                    {% if post.type == 'status' %}
+                    <p class="card-text">{{ post.content }}</p>
+                    {% else %}
+                    <img src="/images/{{ post.contact_name }}/{{ post.contact_name}}_{{ post.content }}.jpg"
+                        style="max-width: 640px;" class="card-img-bottom mx-auto d-block" alt="..." loading="lazy">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-    {% endif %}
 </div>
+{% endfor %}
 {% endblock %}

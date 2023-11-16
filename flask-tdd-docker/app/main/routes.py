@@ -15,10 +15,7 @@ def index():
 
 @bp.route('/profile/<string:username>')
 def profile(username):
-    user = users.query.filter_by(contact_name=username).first_or_404()
-    pictures = user.pictures
-    status = user.status
-
-    return render_template('profile.html', 
-                           user=user, pictures=pictures, 
-                           status=status)
+    feed_data = get_feed(username)
+    
+    human_timestamp = {post.timestamp: format_timestamp(post.timestamp) for post in feed_data}
+    return render_template('profile.html', feed_data=feed_data, human_timestamp=human_timestamp)

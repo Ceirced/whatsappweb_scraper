@@ -1,24 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row m-3 justify-content-center">
+<div class="row mx-auto">
     <div class="col-md-6 ">
         <h1>Feed</h1>
     </div>
 </div>
 {% for post in feed_data %}
-<div class="row m-3 justify-content-center">
-    <div class="col-md-10 shadow-sm">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"></h5>
-                <a href="profile/{{ post.contact_name }}">
-                    <p class="card-text">{{ post.contact_name }}</p>
-                </a>
-                {% if post.type == 'status' %}
+<div class="row mb-3 justify-content-center">
+    <div class="col shadow-sm">
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ url_for('main.profile', username=post.contact_name) }} " style="text-decoration: none;">
+                            <p class="card-text">{{ post.contact_name }} </p>
+                        </a>
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ human_timestamp[post.timestamp] }}</h6>
+                    {% if post.type == 'status' %}
                     <p class="card-text">{{ post.content }}</p>
-                {% else %}
-                    <img src="/images/{{ post.contact_name }}/{{ post.contact_name}}_{{ post.content }}.jpg" class="card-img-top" alt="..." loading="lazy">
-                {% endif %}
+                    {% else %}
+                    <img src="/images/{{ post.contact_name }}/{{ post.contact_name}}_{{ post.content }}.jpg"
+                        style="max-width: 640px;" class="card-img-bottom mx-auto d-block" alt="..." loading="lazy">
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
