@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   api:
     build:
       context: .
@@ -28,6 +27,19 @@ services:
         ipv4_address: 172.24.0.3
         aliases:
           - whatsfeed_app
+    restart: always
+  
+  nginx:
+    build: nginx
+    ports:
+      - 5006:80
+    volumes:
+      - ${PICTURES_DIR}:/var/www/html/images
+    depends_on:
+      - api
+    networks:
+      whatsappweb_scraper_whatsfeed_network:
+        ipv4_address: 172.24.0.4
     restart: always
 
 networks:
