@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 PROJECT_DIR = '/home/cederic/whatsappweb_scraper'
-with open(f'{PROJECT_DIR}/app/config.json', "r") as config_file:
+with open(f'{PROJECT_DIR}/config.json', "r") as config_file:
     config_data = json.load(config_file)
 
 user = config_data["user"]
