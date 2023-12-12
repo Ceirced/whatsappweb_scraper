@@ -149,11 +149,7 @@ def main(args):
     image_url = ''
     for user in users:
         print(f'\n{"":~^50}\n')
-        if len(changes) == 50:
-            seconds = 5
-            print(f'chilling for {seconds} seconds')
-            sleep(seconds)
-            print(f'\n{"":~^50}\n')
+
         user = User(user)
         print(f'Getting profile picture for {user.name}')
         changes[user.name] = {}
