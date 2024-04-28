@@ -193,10 +193,19 @@ def main(args):
         if counter == 5:
             print(f'could not open chat with {user.name} after 5 tries')
             continue
+            
+        try:
+            main_section = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, '//div[@id="main"]'))
+            )
+        except Exception as e:
+            print(e)
+            print(f'could not find main section for {user.name}')
+            continue
         
         try:
-            header_name_element = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, f"(//header)[2]//div[2]/div/div"))
+            header_name_element = WebDriverWait(main_section, 5).until(
+                EC.element_to_be_clickable((By.XPATH, f'.//header'))
             )
         except Exception as e:
             print(e)
