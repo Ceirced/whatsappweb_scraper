@@ -8,7 +8,7 @@ import os
 db = SQLAlchemy()
 migrate = Migrate()
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
     app_settings = os.getenv('APP_SETTINGS')
     app.config.from_object(app_settings)

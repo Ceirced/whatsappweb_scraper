@@ -95,13 +95,13 @@ def NewPicture(driver, user):
     except Exception as e:
         return True
 
-def getStatus(driver, user):
+def getStatus(driver, user, profile_section):
     """function to get status of user
     should only be called when profile was already klicked"""
 
     try:
-        WebDriverWait(driver, 5).until(
-            lambda x: driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span').get_attribute('title') != ''
+        WebDriverWait(driver, 3).until(
+            lambda x: profile_section.find_element(By.XPATH, './div[2]/span/span').get_attribute('title') != ''
         )
     except Exception as e:
         print('could not get status text')
@@ -109,8 +109,8 @@ def getStatus(driver, user):
 
     try:
         # have to find a better way to wait for the status to load
-        status = WebDriverWait(driver, 2).until(
-            EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[2]/span/span'))
+        status = WebDriverWait(profile_section, 2).until(
+            EC.presence_of_element_located((By.XPATH, './div[2]/span/span'))
         )
     except Exception as e:
         print('could not get status')
@@ -149,11 +149,7 @@ def main(args):
     image_url = ''
     for user in users:
         print(f'\n{"":~^50}\n')
-        if len(changes) == 50:
-            seconds = 5
-            print(f'chilling for {seconds} seconds')
-            sleep(seconds)
-            print(f'\n{"":~^50}\n')
+
         user = User(user)
         print(f'Getting profile picture for {user.name}')
         changes[user.name] = {}
@@ -199,31 +195,48 @@ def main(args):
             continue
         
         try:
-            header = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div/div[5]/div/header'))
+            header_name_element = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, f"(//header)[2]//div[2]/div/div"))
             )
         except Exception as e:
             print(e)
             print(f'Profile not Clickable {user.name}')
             continue
-        open_chat = header.text.split('\n')[0]
+        open_chat = header_name_element.text.split('\n')[0]
         if user.name != open_chat:
             print(f'Error: opened chat with {open_chat}')
-            print(f'Header says: {header.text}')
+            print(f'Header says: {header_name_element.text}')
             continue
-        header.click()
+        header_name_element.click()
         print(f'clicked profile for {user.name}')
-
-        try:
-            name_and_number = WebDriverWait(driver, 5).until(
-                EC.text_to_be_present_in_element((By.XPATH, '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]'), user.name)
-            )
-            print(f'{user.name} profile opened')
-        except Exception as e:
-            print(f'could not open profile for {user.name}')
-            print(f'text: {name_and_number.text}')
         
-        status = getStatus(driver, user)
+        try: 
+            profile_section = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'section'))
+            )
+            print(f'profile section found')
+        except Exception as e:
+            print(e)
+            print(f'could not find profile section for {user.name}')
+            continue
+        
+        try:
+            name_present = WebDriverWait(profile_section, 5).until(
+                EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'div'), user.name)
+            )
+            print(f'Name present in profile section for {user.name}')
+            if not name_present:
+                print(f'Name not present in profile section for {user.name}')
+                continue
+            
+            
+        except Exception as e:
+            print(e)
+            print(f'could not find first div in section for {user.name}')
+            continue
+
+        
+        status = getStatus(driver, user, profile_section)
         if status:
             lastStatus = user.lastStatus()
             if lastStatus != status:
@@ -234,7 +247,7 @@ def main(args):
             else:
                 print(f'No new Status for {user.name}')
         try:
-            profile_picture = driver.find_element('xpath', '/html/body/div[1]/div/div/div[6]/span/div/span/div/div/section/div[1]/div[1]/div/img')
+            profile_picture = profile_section.find_element(By.XPATH, './div[1]/div[1]/div/img')
         except:
             print(f'No profile picture for {user.name}')
             continue

@@ -52,6 +52,15 @@ class pictures(db.Model):
     @hybrid_property
     def formatted_timestamp(self) -> str:
         return format_timestamp(self.timestamp)
+    
+    def to_dict(self):
+        return {
+            'image_id': self.image_id,
+            'picture_filename': self.picture_filename,
+            'timestamp': self.timestamp,
+            'formatted_timestamp': self.formatted_timestamp,
+            'user_id': self.user_id
+        }
 
     def __repr__(self) -> str:
         return f"<Picture(image_id={self.image_id!r}, picture_filename={self.picture_filename!r}, timestamp={self.timestamp!r}, user_id={self.user_id!r})>"
@@ -68,6 +77,15 @@ class status(db.Model):
     @hybrid_property
     def formatted_timestamp(self) -> str:
         return format_timestamp(self.timestamp)
+
+    def to_dict(self):
+        return {
+            'status_id': self.status_id,
+            'status': self.status,
+            'timestamp': self.timestamp,
+            'formatted_timestamp': self.formatted_timestamp,
+            'user_id': self.user_id
+        }
 
     def __repr__(self) -> str:
         return f"<Status(status_id={self.status_id!r}, status={self.status!r}, timestamp={self.timestamp!r}, user_id={self.user_id!r})>"
