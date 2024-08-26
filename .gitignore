@@ -13,3 +13,6 @@ whatsfeed_mariadb.session.sql
 config.json
 
 node_modules/
+.wwebjs_cache/
+.wwebjs_auth/
+node_modules/

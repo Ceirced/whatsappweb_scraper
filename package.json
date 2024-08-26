@@ -1,15 +1,16 @@
 {
-  "name": "whatsfeed",
-  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.19.2",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.25.0"
+  },
+  "name": "whatsappweb_scraper",
   "description": "## description This python script uses selenium to download and check for new profile pictures of whatsapp contacts. It uses the chrome browser and chromedriver to run.  It uses the `users.json` file to get the names of the users to check.  It will create a folder for each user and save the profile pictures in it.",
+  "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.19.2",
-    "whatsapp-web.js": "^1.25.0"
-  }
+  "license": "ISC"
 }
