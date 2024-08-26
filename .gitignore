@@ -11,3 +11,5 @@ __pycache__/
 insert_users.py
 whatsfeed_mariadb.session.sql
 config.json
+
+node_modules/
