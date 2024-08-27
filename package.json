@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@prisma/client": "^5.19.0",
     "express": "^4.19.2",
+    "mariadb": "^3.3.1",
     "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.25.0"
   },
@@ -12,5 +14,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "prisma": "^5.19.0"
+  }
 }

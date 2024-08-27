@@ -16,3 +16,6 @@ node_modules/
 .wwebjs_cache/
 .wwebjs_auth/
 node_modules/
+.env
+prisma/dev.db
+prisma/dev.db-journal
