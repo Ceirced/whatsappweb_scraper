@@ -17,5 +17,8 @@
   "license": "ISC",
   "devDependencies": {
     "prisma": "^5.19.0"
+  },
+  "prisma": {
+    "schema": "node_part/prisma/schema.prisma"
   }
 }

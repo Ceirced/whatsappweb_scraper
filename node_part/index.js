@@ -5,6 +5,8 @@ const whatsapp = new Client({
   authStrategy: new LocalAuth(),
 });
 
+const { pictureUrlToId, checkIfPictureNew } = require("./helper");
+
 const express = require("express");
 const app = express();
 const port = 3000;
@@ -16,7 +18,7 @@ whatsapp.on("qr", (qr) => {
   });
 });
 
-const users = JSON.parse(fs.readFileSync("users.json", "utf8"));
+const users = JSON.parse(fs.readFileSync("node_users.json", "utf8"));
 
 whatsapp.on("ready", () => {
   console.log("Client is ready!");
@@ -29,7 +31,14 @@ whatsapp.on("ready", () => {
         if (contact) {
           console.log("Contact found:", contact.name);
           whatsapp.getProfilePicUrl(contact.id._serialized).then((url) => {
-            console.log("Profile picture URL:", url);
+            console.log("Profile picture URL:", pictureUrlToId(url));
+            checkIfPictureNew(pictureUrlToId(url)).then((isNew) => {
+              if (isNew) {
+                console.log("New profile picture detected!");
+              } else {
+                console.log("Profile picture not changed.");
+              }
+            });
           });
         } else {
           console.log("Contact not found:", user.name);
