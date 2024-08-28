@@ -9,33 +9,33 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mysql"
+  url      = "mysql://cederic:complicated@172.24.0.2:3306/whatsfeed"
 }
 
-model User {
+model users {
   user_id      Int       @id @default(autoincrement())
   contact_name String    @unique
-  pictures     Picture[]
-  statuses     Status[]
+  pictures     pictures[]
+  statuses     status[]
 }
 
-model Picture {
+model pictures {
   image_id         Int    @id @default(autoincrement())
   picture_filename String
   timestamp        BigInt
   user_id          Int
-  user             User   @relation(fields: [user_id], references: [user_id])
+  user             users   @relation(fields: [user_id], references: [user_id])
 
   @@unique([picture_filename, timestamp, user_id])
 }
 
-model Status {
+model status {
   status_id  Int    @id @default(autoincrement())
   status     String
   timestamp  BigInt
   user_id    Int
-  user       User   @relation(fields: [user_id], references: [user_id])
+  user       users   @relation(fields: [user_id], references: [user_id])
 
   @@unique([status, timestamp, user_id])
 }
