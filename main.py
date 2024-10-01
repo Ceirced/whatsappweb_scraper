@@ -254,7 +254,7 @@ def main(args):
 
         try:
             header_name_element = WebDriverWait(main_section, 5).until(
-                EC.element_to_be_clickable((By.XPATH, f".//header"))
+                EC.element_to_be_clickable((By.XPATH, ".//header"))
             )
         except Exception as e:
             print(e)
@@ -272,7 +272,7 @@ def main(args):
             profile_section = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "section"))
             )
-            print(f"profile section found")
+            print("profile section found")
         except Exception as e:
             print(e)
             print(f"could not find profile section for {user.name}")
