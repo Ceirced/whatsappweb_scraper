@@ -94,7 +94,7 @@ def getQRcode(driver):
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[1]/div/div/div[3]/div[1]/div/div/div[2]/div/canvas",
+                    "/html/body/div[1]/div/div/div[2]/div[3]/div[1]/div/div/div[2]/div/canvas",
                 )
             )
         )
