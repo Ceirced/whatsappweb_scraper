@@ -176,12 +176,13 @@ def main(args):
     changes = {}
     options = Options()
     options.add_argument("--headless=new")
+    options.add_argument("--remote-debugging-pipe")
     options.add_argument(f"--user-data-dir={DIRECTORY}/User_Data")
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3641.0 Safari/537.36"
     )
     if args.head:
-        options.arguments.remove("--headless")
+        options.arguments.remove("--headless=new")
 
     driver = webdriver.Chrome(options=options)
     driver.get("https://web.whatsapp.com/")
