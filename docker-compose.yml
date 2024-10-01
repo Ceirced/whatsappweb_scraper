@@ -1,4 +1,3 @@
-version: '3'
 volumes:
   whatsfeed_mariadb:
   testing_whatsfeed_mariadb:
@@ -15,18 +14,6 @@ services:
     networks:
       whatsfeed_network:
         ipv4_address: 172.24.0.2
-  testing-db:
-    image: mariadb:11
-    container_name: testing_whatsfeed_mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: test 
-    volumes:
-      - testing_whatsfeed_mariadb:/var/lib/mysql
-      - ./mariadb:/docker-entrypoint-initdb.d
-    restart: always
-    networks:
-      whatsfeed_network:
-        ipv4_address: 172.24.0.12
 
 networks:
   whatsfeed_network:
