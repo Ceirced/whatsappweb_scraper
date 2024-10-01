@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api:
     build:
@@ -14,8 +12,6 @@ services:
       - FLASK_APP=whatsfeed.py
       - PRODUCTION_DATABASE_URI=${PRODUCTION_DATABASE_URI}
       - APP_SETTINGS=config.ProductionConfig
-      # - APP_SETTINGS=config.TestingConfig
-      # - APP_SETTINGS=config.DevelopmentConfig
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
       interval: 10s
