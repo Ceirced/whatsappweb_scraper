@@ -1,7 +1,7 @@
 # pull official base image
 FROM python:3.11.2-slim-buster
 
-RUN apt-get update && apt-get -y install curl=7.64.0-4+deb10u7 --no-install-recommends \
+RUN apt-get update && apt-get -y install curl --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
