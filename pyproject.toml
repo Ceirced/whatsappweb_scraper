@@ -15,6 +15,9 @@ matplotlib = "^3.9.2"
 pyqt6 = "^6.7.1"
 
 
+[tool.poetry.group.dev.dependencies]
+types-selenium = "^3.141.9"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -1064,6 +1064,17 @@ trio = ">=0.11"
 wsproto = ">=0.14"
 
 [[package]]
+name = "types-selenium"
+version = "3.141.9"
+description = "Typing stubs for selenium"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-selenium-3.141.9.tar.gz", hash = "sha256:0817ad9914f5d4c5b064ca2fbf694a1b4c668465a502bd3d1248d82e098132ce"},
+    {file = "types_selenium-3.141.9-py3-none-any.whl", hash = "sha256:83606e061154bc2241d6eba964263f9cf1dcaa6c7dfff0bb10d3abcfbdaefdc7"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.12.2"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -1127,4 +1138,4 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "f4646dca534d4da29b9f75a23768380f949eba15f81e65e2ccd1e8a698532e30"
+content-hash = "affb0cd60aa15a948afca190f27aa44bf176f89f395fc0fed0f82e9b926e4de2"
