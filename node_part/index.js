@@ -18,36 +18,45 @@ whatsapp.on("qr", (qr) => {
 });
 
 
-whatsapp.on("ready", () => {
+// Log when the client is ready
+whatsapp.on("ready", async () => {
   console.log("Client is ready!");
-  whatsapp
-    .getContacts()
-    .then((contacts) => {
-      const users = get_users();
-      users.then((users) => {
-        users.forEach((user) => {
-          const contact = contacts.find((contact) => contact.name === user.contact_name);
-          if (contact) {
-            whatsapp.getProfilePicUrl(contact.id._serialized).then((url) => {
-              picture_id = pictureUrlToId(url);
-              checkIfPictureNew(picture_id).then((isNew) => {
-                if (isNew) {
-                  console.log("New profile picture detected!");
-                } else {
-                  console.log("Profile picture not changed for user:", contact.name);
-                }
-              });
-            });
-          } else {
-            console.log("Contact not found:", user.name);
-          }
-        });
-      });
-    })
-    .catch((error) => {
-      console.error("Error fetching contacts:", error);
-    });
-})
+  await processContacts();
+});
+
+// Process contacts and check for new profile pictures
+async function processContacts() {
+  try {
+    const contacts = await whatsapp.getContacts();
+    const users = await get_users();
+
+    for (const user of users) {
+      const contact = contacts.find((contact) => contact.name === user.contact_name);
+      if (contact) {
+        await checkProfilePicture(contact);
+      }
+    }
+  } catch (error) {
+    console.error("Error processing contacts:", error);
+  }
+}
+
+// Check if the profile picture is new
+async function checkProfilePicture(contact) {
+  try {
+    const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
+    const picture_id = pictureUrlToId(url);
+    const isNew = await checkIfPictureNew(picture_id);
+
+    if (isNew) {
+      console.log("New profile picture detected!");
+    } else {
+      console.log("Profile picture not changed for user:", contact.name);
+    }
+  } catch (error) {
+    console.error("Error checking profile picture:", error);
+  }
+}
 
 
 whatsapp.initialize();
