@@ -51,10 +51,10 @@ async function checkProfilePicture(contact) {
     if (isNew) {
       console.log("New profile picture detected!");
     } else {
-      console.log("Profile picture not changed for user:", contact.name);
+      console.log(`Profile picture not changed for ${contact.name}`);
     }
   } catch (error) {
-    console.error("Error checking profile picture:", error);
+    console.error(`Error checking profile picture for ${contact.name}`, error);
   }
 }
 

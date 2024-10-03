@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const fs = require("fs");
 const prisma = new PrismaClient();
 
 function pictureUrlToId(url) {
@@ -18,7 +17,7 @@ async function checkIfPictureNew(identifier) {
 
 async function get_users() {
   const db_users = await prisma.users.findMany({
-    take: 5,
+    take: 20,
   });
   return db_users;
 }
