@@ -1,11 +1,10 @@
 const qrcode = require("qrcode-terminal");
-const fs = require("fs");
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const whatsapp = new Client({
   authStrategy: new LocalAuth(),
 });
 
-const { pictureUrlToId, checkIfPictureNew } = require("./helper");
+const { pictureUrlToId, checkIfPictureNew, get_users} = require("./helper");
 
 const express = require("express");
 const app = express();
@@ -18,7 +17,7 @@ whatsapp.on("qr", (qr) => {
   });
 });
 
-const users = JSON.parse(fs.readFileSync("node_users.json", "utf8"));
+const users = get_users(); 
 
 whatsapp.on("ready", () => {
   console.log("Client is ready!");
@@ -29,10 +28,9 @@ whatsapp.on("ready", () => {
       users.users.forEach((user) => {
         const contact = contacts.find((contact) => contact.name === user.name);
         if (contact) {
-          console.log("Contact found:", contact.name);
           whatsapp.getProfilePicUrl(contact.id._serialized).then((url) => {
-            console.log("Profile picture URL:", pictureUrlToId(url));
-            checkIfPictureNew(pictureUrlToId(url)).then((isNew) => {
+            picture_id = pictureUrlToId(url);
+            checkIfPictureNew(picture_id).then((isNew) => {
               if (isNew) {
                 console.log("New profile picture detected!");
               } else {
@@ -48,6 +46,7 @@ whatsapp.on("ready", () => {
     .catch((error) => {
       console.error("Error fetching contacts:", error);
     });
-});
+})
+
 
 whatsapp.initialize();

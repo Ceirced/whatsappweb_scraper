@@ -20,3 +20,4 @@ node_modules/
 prisma/dev.db
 prisma/dev.db-journal
 backups/
+node_part/node_users.json
