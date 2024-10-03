@@ -4,7 +4,7 @@ const whatsapp = new Client({
   authStrategy: new LocalAuth(),
 });
 
-const { pictureUrlToId, checkIfPictureNew, get_users} = require("./helper");
+const { pictureUrlToId, checkIfPictureNew, get_users } = require("./helper");
 
 const express = require("express");
 const app = express();
@@ -17,30 +17,31 @@ whatsapp.on("qr", (qr) => {
   });
 });
 
-const users = get_users(); 
 
 whatsapp.on("ready", () => {
   console.log("Client is ready!");
   whatsapp
     .getContacts()
     .then((contacts) => {
-      // get the profile picture of the contacts in the users.json file
-      users.users.forEach((user) => {
-        const contact = contacts.find((contact) => contact.name === user.name);
-        if (contact) {
-          whatsapp.getProfilePicUrl(contact.id._serialized).then((url) => {
-            picture_id = pictureUrlToId(url);
-            checkIfPictureNew(picture_id).then((isNew) => {
-              if (isNew) {
-                console.log("New profile picture detected!");
-              } else {
-                console.log("Profile picture not changed.");
-              }
+      const users = get_users();
+      users.then((users) => {
+        users.forEach((user) => {
+          const contact = contacts.find((contact) => contact.name === user.contact_name);
+          if (contact) {
+            whatsapp.getProfilePicUrl(contact.id._serialized).then((url) => {
+              picture_id = pictureUrlToId(url);
+              checkIfPictureNew(picture_id).then((isNew) => {
+                if (isNew) {
+                  console.log("New profile picture detected!");
+                } else {
+                  console.log("Profile picture not changed for user:", contact.name);
+                }
+              });
             });
-          });
-        } else {
-          console.log("Contact not found:", user.name);
-        }
+          } else {
+            console.log("Contact not found:", user.name);
+          }
+        });
       });
     })
     .catch((error) => {

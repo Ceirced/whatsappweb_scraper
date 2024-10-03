@@ -16,9 +16,11 @@ async function checkIfPictureNew(identifier) {
   return !picture;
 }
 
-function get_users() {
-  users = JSON.parse(fs.readFileSync("node_users.json", "utf8"));
-  return users;
+async function get_users() {
+  const db_users = await prisma.users.findMany({
+    take: 5,
+  });
+  return db_users;
 }
 
 module.exports = {
