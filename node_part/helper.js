@@ -19,6 +19,31 @@ async function checkIfPictureNew(identifier) {
   return !picture;
 }
 
+async function insert_picture(identifier, user) {
+  const prisma = new PrismaClient();
+  const timestamp = Math.floor(Date.now() / 1000)
+
+  const picture = {
+    picture_filename: identifier,
+    user: {
+      connect: {
+        user_id: user.user_id,
+      },
+    },
+    timestamp: timestamp,
+  };
+  try {
+    await prisma.pictures.create({
+      data: picture,
+    });
+    logger.info(`inserted picture for user: ${user.contact_name}`);
+  }
+  catch (e) {
+    logger.error('Error inserting picture:', e);
+  }
+  prisma.$disconnect();
+}
+
 async function get_users() {
   const prisma = new PrismaClient();
   const db_users = await prisma.users.findMany({
@@ -33,4 +58,5 @@ module.exports = {
   pictureUrlToId,
   checkIfPictureNew,
   get_users,
+  insert_picture,
 };

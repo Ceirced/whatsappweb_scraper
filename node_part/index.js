@@ -5,7 +5,7 @@ const whatsapp = new Client({
   authStrategy: new LocalAuth(),
 });
 
-const { pictureUrlToId, checkIfPictureNew, get_users } = require("./helper");
+const { pictureUrlToId, checkIfPictureNew, get_users, insert_picture } = require("./helper");
 
 const express = require("express");
 const app = express();
@@ -51,7 +51,13 @@ async function processContacts() {
     for (const user of users) {
       const contact = contacts.find((contact) => contact.name === user.contact_name);
       if (contact) {
-        await checkProfilePicture(contact);
+        const new_picture = await checkProfilePicture(contact);
+        if (new_picture) {
+          const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
+          const picture_id = pictureUrlToId(url);
+          await insert_picture(picture_id, user);
+        }
+
       }
     }
   } catch (error) {
