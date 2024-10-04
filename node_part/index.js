@@ -36,6 +36,7 @@ whatsapp.on('ready', async () => {
     console.log('Page error: ' + err.toString());
   });
 
+  whatsapp.destroy();
 });
 
 // Process contacts and check for new profile pictures
