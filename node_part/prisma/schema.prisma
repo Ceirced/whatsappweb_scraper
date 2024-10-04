@@ -14,8 +14,8 @@ datasource db {
 }
 
 model users {
-  user_id      Int       @id @default(autoincrement())
-  contact_name String    @unique
+  user_id      Int        @id @default(autoincrement())
+  contact_name String     @unique
   pictures     pictures[]
   statuses     status[]
 }
@@ -25,17 +25,17 @@ model pictures {
   picture_filename String
   timestamp        BigInt
   user_id          Int
-  user             users   @relation(fields: [user_id], references: [user_id])
+  user             users  @relation(fields: [user_id], references: [user_id])
 
   @@unique([picture_filename, timestamp, user_id])
 }
 
 model status {
-  status_id  Int    @id @default(autoincrement())
-  status     String
-  timestamp  BigInt
-  user_id    Int
-  user       users   @relation(fields: [user_id], references: [user_id])
+  status_id Int    @id @default(autoincrement())
+  status    String
+  timestamp BigInt
+  user_id   Int
+  user      users  @relation(fields: [user_id], references: [user_id])
 
   @@unique([status, timestamp, user_id])
 }
