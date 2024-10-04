@@ -1,5 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const pino = require('pino');
+
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 function pictureUrlToId(url) {
   const identifier = url.split("_n.jpg")[0].split("/").pop();
