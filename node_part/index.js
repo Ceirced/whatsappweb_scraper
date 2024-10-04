@@ -1,4 +1,5 @@
 const qrcode = require("qrcode-terminal");
+const pino = require('pino');
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const whatsapp = new Client({
   authStrategy: new LocalAuth(),
@@ -10,6 +11,8 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+
 // whatsapp
 whatsapp.on("qr", (qr) => {
   qrcode.generate(qr, {
@@ -19,13 +22,13 @@ whatsapp.on("qr", (qr) => {
 
 
 whatsapp.on('loading_screen', (percent, message) => {
-  console.log('LOADING SCREEN', percent, message);
+  logger.info('LOADING SCREEN', percent, message);
 });
 
 whatsapp.on('ready', async () => {
-  console.log('READY');
+  logger.info('READY');
   const debugWWebVersion = await whatsapp.getWWebVersion();
-  console.log(`WWebVersion = ${debugWWebVersion}`);
+  logger.debug(`WWebVersion = ${debugWWebVersion}`);
 
   await processContacts();
 
@@ -52,7 +55,7 @@ async function processContacts() {
       }
     }
   } catch (error) {
-    console.error("Error processing contacts:", error);
+    logger.error("Error processing contacts:", error);
   }
 }
 
@@ -61,19 +64,22 @@ async function checkProfilePicture(contact) {
   try {
     const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
     if (!url) {
-      console.log(`No profile picture found for ${contact.name}`);
+      logger.info(`No profile picture found for ${contact.name}`);
       return;
     }
     const picture_id = pictureUrlToId(url);
     const isNew = await checkIfPictureNew(picture_id);
 
     if (isNew) {
-      console.log(`New profile picture for ${contact.name} detected!`);
+      logger.info(`New profile picture for ${contact.name} detected!`);
+      // Save the picture to the database
+      return true;
     } else {
-      console.log(`Profile picture not changed for ${contact.name}`);
+      logger.info(`Profile picture not changed for ${contact.name}`);
+      return false;
     }
   } catch (error) {
-    console.error(`Error checking profile picture for ${contact.name}`, error);
+    logger.error(`Error checking profile picture for ${contact.name}`, error);
   }
 }
 
