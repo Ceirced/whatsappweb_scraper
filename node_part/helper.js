@@ -7,18 +7,23 @@ function pictureUrlToId(url) {
 }
 
 async function checkIfPictureNew(identifier) {
+  const prisma = new PrismaClient();
   const picture = await prisma.pictures.findFirst({
     where: {
       picture_filename: identifier,
     },
   });
+  prisma.$disconnect();
   return !picture;
 }
 
 async function get_users() {
+  const prisma = new PrismaClient();
   const db_users = await prisma.users.findMany({
-    take: 20,
+    where: {
+    },
   });
+  prisma.$disconnect();
   return db_users;
 }
 
