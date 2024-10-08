@@ -22,7 +22,7 @@ const scrapeNewProfilePictures = async () => {
 
 
     whatsapp.on('loading_screen', (percent, message) => {
-        logger.info('LOADING SCREEN:::', percent, message);
+        logger.info('LOADING SCREEN:', percent, message);
     });
 
     whatsapp.on('ready', async () => {
@@ -54,7 +54,7 @@ async function processContacts(whatsapp) {
         for (const user of users) {
             const contact = contacts.find((contact) => contact.name === user.contact_name);
             if (contact) {
-                const new_picture = await checkProfilePicture(contact);
+                const new_picture = await checkProfilePicture(whatsapp, contact);
                 if (new_picture) {
                     const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
                     const picture_id = pictureUrlToId(url);
@@ -70,7 +70,7 @@ async function processContacts(whatsapp) {
 }
 
 // Check if the profile picture is new
-async function checkProfilePicture(contact) {
+async function checkProfilePicture(whatsapp, contact) {
     try {
         const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
         if (!url) {
