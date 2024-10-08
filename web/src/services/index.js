@@ -7,10 +7,6 @@ const whatsapp = new Client({
 
 const { pictureUrlToId, checkIfPictureNew, get_users, insert_picture } = require("./helper");
 
-const express = require("express");
-const app = express();
-const port = 3000;
-
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 // whatsapp
@@ -55,7 +51,7 @@ async function processContacts() {
         if (new_picture) {
           const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
           const picture_id = pictureUrlToId(url);
-          await insert_picture(picture_id, user);
+          // await insert_picture(picture_id, user);
         }
 
       }

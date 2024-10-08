@@ -1,8 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `whatsfeed`;
 CREATE USER IF NOT EXISTS 'cederic' @'172.24.0.1' IDENTIFIED BY 'complicated';
 CREATE USER IF NOT EXISTS 'cederic' @'172.24.0.3' IDENTIFIED BY 'complicated';
-GRANT ALL PRIVILEGES ON whatsfeed.* TO 'cederic' @'172.24.0.1';
-GRANT ALL PRIVILEGES ON whatsfeed.* TO 'cederic' @'172.24.0.3';
+GRANT ALL PRIVILEGES ON whatsfeed.* TO 'cederic' @'172.24.0.%';
 FLUSH PRIVILEGES;
 USE `whatsfeed`;
 CREATE TABLE IF NOT EXISTS `users` (

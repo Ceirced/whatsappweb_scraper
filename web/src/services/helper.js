@@ -45,13 +45,19 @@ async function insert_picture(identifier, user) {
 }
 
 async function get_users() {
-  const prisma = new PrismaClient();
-  const db_users = await prisma.users.findMany({
-    where: {
-    },
-  });
-  prisma.$disconnect();
-  return db_users;
+  try {
+    const prisma = new PrismaClient();
+    const db_users = await prisma.users.findMany({
+      where: {
+      },
+    });
+    prisma.$disconnect();
+    return db_users;
+  }
+  catch (e) {
+    logger.error('Error getting users:', e);
+    throw e;
+  }
 }
 
 module.exports = {
