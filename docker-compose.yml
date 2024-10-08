@@ -24,8 +24,6 @@ services:
       - ./web/src:/usr/src/app/src
     networks:
       - whatsfeed_network
-    environment:
-      - DEBUG=prisma*
   
 
 networks:
