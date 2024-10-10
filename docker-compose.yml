@@ -27,6 +27,46 @@ services:
       - whatsfeed_network
     depends_on:
       - db
+  api:
+    build:
+      context: whatsfeed_app
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    # to sync the ./api dir with the container only for development
+    volumes:
+      - ./whatsfeed_app/app:/usr/src/app/app
+
+    environment:
+        #so manage.py knows which app to run
+      - FLASK_APP=whatsfeed.py
+      - PRODUCTION_DATABASE_URI=${PRODUCTION_DATABASE_URI}
+      - APP_SETTINGS=config.ProductionConfig
+    healthcheck:
+      test: curl --fail http://localhost:5000 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      whatsfeed_network:
+        aliases:
+          - whatsfeed_app
+    restart: unless-stopped
+    depends_on:
+      - db
+      - web 
+  
+  nginx:
+    build: whatsfeed_app/nginx
+    ports:
+      - 5006:80
+    volumes:
+      - ${PICTURES_DIR}:/var/www/html/images
+    depends_on:
+      - api
+    networks:
+      whatsfeed_network:
+    restart: always
 
 networks:
   whatsfeed_network:
