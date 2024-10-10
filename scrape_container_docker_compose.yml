@@ -1,7 +1,0 @@
-version: '3'
-
-services:
-  selenium_container:
-    image: whatsfeed_scraper
-    volumes:
-      - ./volume:/home/user/app/data
