@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@prisma/client": "^5.19.0",
+    "axios": "^1.7.7",
     "express": "^4.19.2",
     "mariadb": "^3.3.1",
     "pino": "^9.4.0",
