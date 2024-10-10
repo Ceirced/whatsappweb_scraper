@@ -1,5 +1,8 @@
 const qrcode = require("qrcode-terminal");
 const pino = require('pino');
+const axios = require('axios');
+const path = require('path');
+const fs = require('fs');
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const { pictureUrlToId, checkIfPictureNew, get_users, insert_picture } = require("./helper");
@@ -58,7 +61,8 @@ async function processContacts(whatsapp) {
                 if (new_picture) {
                     const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
                     const picture_id = pictureUrlToId(url);
-                    // await insert_picture(picture_id, user);
+                    await insert_picture(picture_id, user);
+                    await download_picture(url, contact);
                 }
 
             }
@@ -68,6 +72,36 @@ async function processContacts(whatsapp) {
         throw error;
     }
 }
+
+async function download_picture(url, contact) {
+    try {
+        const response = await axios({
+            url,
+            method: 'GET',
+            responseType: 'stream'
+        });
+
+        const picture_id = pictureUrlToId(url);
+        const dirPath = path.join('images', contact.name);
+
+        // Ensure the directory exists
+        if (!fs.existsSync(dirPath)) {
+            fs.mkdirSync(dirPath, { recursive: true });
+        }
+
+        const filePath = path.join(dirPath, `${contact.name}_${picture_id}.jpg`);
+
+        return new Promise((resolve, reject) => {
+            response.data.pipe(fs.createWriteStream(filePath))
+                .on('finish', () => resolve())
+                .on('error', (e) => reject(e));
+        });
+    } catch (error) {
+        logger.error("Error downloading picture:", error);
+        throw error;
+    }
+}
+
 
 // Check if the profile picture is new
 async function checkProfilePicture(whatsapp, contact) {

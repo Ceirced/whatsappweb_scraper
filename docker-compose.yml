@@ -22,9 +22,11 @@ services:
       - "81:5000"
     volumes:
       - ./web/src:/usr/src/app/src
+      - ./profile_pictures:/usr/src/app/images
     networks:
       - whatsfeed_network
-  
+    depends_on:
+      - db
 
 networks:
   whatsfeed_network:
