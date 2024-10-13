@@ -1,11 +1,43 @@
 const { PrismaClient } = require("@prisma/client");
 const pino = require('pino');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+const logger = pino({ level: process.env.LOG_LEVEL || 'debug' });
 
 function pictureUrlToId(url) {
   const identifier = url.split("_n.jpg")[0].split("/").pop();
   return identifier;
+}
+
+async function checkIfAboutNew(about, user) {
+  const prisma = new PrismaClient();
+  const latest_about = await prisma.status.findFirst({
+    where: {
+      user: {
+        user_id: user.user_id,
+      },
+    },
+    orderBy: {
+      timestamp: 'desc',
+    },
+    take: 1,
+  });
+  prisma.$disconnect();
+  if (latest_about === null || latest_about.status === null) {
+    if (about !== "") {
+      logger.info(`${user.contact_name} added about: ${about}`);
+      return true;
+    }
+    return false;
+  }
+  else {
+    if (about === null) {
+      logger.info(`${user.contact_name} removed about`);
+      logger.debug(`latest about in db ${latest_about.status}`);
+      return true;
+    }
+  }
+  logger.debug(`latest about in db ${latest_about.status}`);
+  return latest_about.status !== about;
 }
 
 async function checkIfPictureNew(identifier) {
@@ -17,6 +49,31 @@ async function checkIfPictureNew(identifier) {
   });
   prisma.$disconnect();
   return !picture;
+}
+
+async function insert_about(about, user) {
+  const prisma = new PrismaClient();
+  const timestamp = Math.floor(Date.now() / 1000)
+
+  const status = {
+    status: about,
+    user: {
+      connect: {
+        user_id: user.user_id,
+      },
+    },
+    timestamp: timestamp,
+  };
+  try {
+    await prisma.status.create({
+      data: status,
+    });
+    logger.info(`inserted about for user: ${user.contact_name}`);
+  }
+  catch (e) {
+    logger.error('Error inserting about:', e);
+  }
+  prisma.$disconnect();
 }
 
 async function insert_picture(identifier, user) {
@@ -65,4 +122,6 @@ module.exports = {
   checkIfPictureNew,
   get_users,
   insert_picture,
+  checkIfAboutNew,
+  insert_about
 };

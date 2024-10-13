@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const { pictureUrlToId, checkIfPictureNew, get_users, insert_picture } = require("./helper");
+const { pictureUrlToId, checkIfPictureNew, get_users, insert_picture, checkIfAboutNew, insert_about } = require("./helper");
 
 
 const scrapeNewProfilePictures = async () => {
@@ -58,6 +58,14 @@ async function processContacts(whatsapp) {
             const contact = contacts.find((contact) => contact.name === user.contact_name);
             if (contact) {
                 const new_picture = await checkProfilePicture(whatsapp, contact);
+                const new_about = await checkAbout(contact, user);
+
+                if (new_about) {
+                    logger.info(`New about for ${contact.name} detected!`);
+                    // Save the about to the database
+                    await insert_about(new_about, user);
+                }
+
                 if (new_picture) {
                     const url = await whatsapp.getProfilePicUrl(contact.id._serialized);
                     const picture_id = pictureUrlToId(url);
@@ -102,6 +110,20 @@ async function download_picture(url, contact) {
     }
 }
 
+async function checkAbout(contact, user) {
+    try {
+        const about = await contact.getAbout();
+        const isNew = await checkIfAboutNew(about, user);
+        if (isNew) {
+            return about;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        logger.error(`Error checking about for ${contact.name}`, error);
+        throw error;
+    }
+}
 
 // Check if the profile picture is new
 async function checkProfilePicture(whatsapp, contact) {
