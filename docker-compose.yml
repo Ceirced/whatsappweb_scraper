@@ -13,7 +13,6 @@ services:
     restart: always
     networks:
       whatsfeed_network:
-        ipv4_address: 172.24.0.2
   web:
     restart: on-failure
     build: ./web

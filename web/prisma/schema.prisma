@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://cederic:complicated@172.24.0.2:3306/whatsfeed"
+  url      = "mysql://cederic:complicated@db:3306/whatsfeed"
 }
 
 model users {
