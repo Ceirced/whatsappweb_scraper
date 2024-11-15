@@ -121,7 +121,6 @@ async function checkAbout(contact, user) {
         }
     } catch (error) {
         logger.error(`Error checking about for ${contact.name}`, error);
-        throw error;
     }
 }
 
